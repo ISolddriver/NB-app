@@ -16,3 +16,15 @@ export default defineConfig({
     }
   }
 })
+
+module.exports = {
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://10.168.9.66:8080',
+        changeOrigin: true,
+        rewrite: (path: string) => path.replace(/^\/api/, '/')
+      }
+    }
+  }
+}

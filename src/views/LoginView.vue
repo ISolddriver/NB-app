@@ -1,73 +1,114 @@
 <template>
   <div class="login-container">
-    <a-form
-      :model="formState"
-      name="basic"
-      :label-col="{ span: 8 }"
-      :wrapper-col="{ span: 16 }"
-      autocomplete="off"
-      @finish="onFinish"
-      @finishFailed="onFinishFailed"
-    >
-      <a-form-item
-        label="Username"
-        name="username"
-        :rules="[{ required: true, message: 'Please input your username!' }]"
+    <div class="user-layout">
+      <div class="top">
+        <img class="logo" src="@/assets/NByangan.svg" alt="">
+        <span>New Bee</span>
+      </div>
+      <a-form
+        :model="formState"
+        autocomplete="off"
+        @finish="onFinish"
+        @finishFailed="onFinishFailed"
       >
-        <a-input v-model:value="formState.username" />
-      </a-form-item>
+        <a-form-item
+          name="username"
+          :rules="[{ required: true, message: '请输入账号' }]"
+        >
+          <a-input style="width: 360px;" v-model:value="formState.username" placeholder="请输入账号">
+            <template #prefix><UserOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
+          </a-input>
+        </a-form-item>
 
-      <a-form-item
-        label="Password"
-        name="password"
-        :rules="[{ required: true, message: 'Please input your password!' }]"
-      >
-        <a-input-password v-model:value="formState.password" />
-      </a-form-item>
+        <a-form-item
+          name="password"
+          :rules="[{ required: true, message: '请输入密码' }]"
+        >
+          <a-input-password style="width: 360px;" v-model:value="formState.password" placeholder="请输入密码">
+            <template #prefix><LockOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
+          </a-input-password>
+        </a-form-item>
 
-      <a-form-item name="remember" :wrapper-col="{ offset: 8, span: 16 }">
-        <a-checkbox v-model:checked="formState.remember">Remember me</a-checkbox>
-      </a-form-item>
+        <a-form-item name="remember">
+          <a-checkbox v-model:checked="formState.remember">Remember me</a-checkbox>
+        </a-form-item>
 
-      <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
-        <a-button type="primary" html-type="submit">登录</a-button>
-      </a-form-item>
-    </a-form>
+        <a-form-item>
+          <a-button style="width: 360px;" type="primary" @click="login">登录</a-button>
+        </a-form-item>
+      </a-form>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive } from 'vue';
+import { onMounted, reactive } from 'vue';
+import {
+  handleLogin,
+  getImgLocation
+} from '@/apis/login';
+import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
 
 interface FormState {
-  username: string;
-  password: string;
+  username: string | undefined;
+  password: string | undefined;
   remember: boolean;
 }
 
 const formState = reactive<FormState>({
-  username: '',
-  password: '',
+  username: undefined,
+  password: undefined,
   remember: true,
-});
+})
+
 const onFinish = (values: any) => {
   console.log('Success:', values);
-};
+}
 
 const onFinishFailed = (errorInfo: any) => {
   console.log('Failed:', errorInfo);
-};
+}
+
+onMounted(async () => {
+  const res:object = await getImgLocation({})
+})
+
+const login = async () => {
+  const res = await handleLogin({
+    username: formState.username,
+    password: formState.password,})
+  console.log(res)
+}
 </script>
 
-<style>
+<style lang="less">
   .login-container {
-    max-width: 360px;
-    margin: 120px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    background-image: url('src/assets/background.svg');
+    background-size: cover;
+    .user-layout {
+      padding: 88px 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      .top {
+        // width: 360px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 40px;
+        .logo {
+          width: 44px;
+        }
+        span {
+          font-size: 32px;
+          padding-left: 12px;
+        }
+      }
+    }
   }
 </style>
 

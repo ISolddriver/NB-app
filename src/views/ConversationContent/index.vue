@@ -11,7 +11,7 @@
     </a-select>
     <a-button style="margin-left: 16px" type="primary">查询</a-button>
   </div>
-  <div class="table">
+  <div class="base-card table">
     <a-table :columns="columns" :data-source="data" bordered>
       <template #bodyCell="{ column, text }">
         <template v-if="column.dataIndex === 'name'">
@@ -27,13 +27,13 @@ import type { SelectProps } from 'ant-design-vue'
 interface columnData {
   title: string;
   dataIndex: string;
-  className: string;
+  className?: string;
 }
 const columns:Array<columnData> = [
   {
     title: 'Name',
     dataIndex: 'name',
-    className: ''
+    // className: ''
   },
   {
     title: 'Cash Assets',
@@ -43,7 +43,7 @@ const columns:Array<columnData> = [
   {
     title: 'Address',
     dataIndex: 'address',
-    className: '',
+    // className: '',
   },
 ];
 const data = [

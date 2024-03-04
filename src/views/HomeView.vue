@@ -157,9 +157,9 @@ const toggleCollapsed = () => {
       }
     }
     .menu-container {
-      height: calc(100vh - 64px);
+      min-height: calc(100vh - 64px);
       width: v-bind('state.collapsedWidth');
-      overflow-y: scroll;
+      // overflow-y: scroll;
     }
     .content {
       width: calc(100vw - v-bind('state.collapsedWidth'));
