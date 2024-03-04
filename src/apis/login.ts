@@ -1,7 +1,11 @@
 import Request from "@/utils/axios";
 
 export function handleLogin (data: any) {
-  return Request.post('/api/login', data)
+  return Request.post('/auth/login', data)
+}
+
+export function handleLoginout (data: any) {
+  return Request.get('/auth/logout')
 }
 
 export function getImgLocation (data: any) {

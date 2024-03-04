@@ -44,7 +44,8 @@
 import { onMounted, reactive } from 'vue';
 import {
   handleLogin,
-  getImgLocation
+  getImgLocation,
+  handleLoginout
 } from '@/apis/login';
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
 
@@ -69,6 +70,7 @@ const onFinishFailed = (errorInfo: any) => {
 }
 
 onMounted(async () => {
+  handleLoginout({})
   const res:object = await getImgLocation({})
 })
 
