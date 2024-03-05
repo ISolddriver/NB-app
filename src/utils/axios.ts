@@ -76,15 +76,16 @@ export class Request {
   public get<T = any>(
     url: string,
     config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<Result<T>>> {
+  ): Promise<Result<T>> {
     return this.instance.get(url, config);
   }
+  // TODO Promise<AxiosResponse<Result<T>>>
 
   public post<T = any>(
     url: string,
     data?: any,
     config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<Result<T>>> {
+  ): Promise<Result<T>> {
     return this.instance.post(url, data, config);
   }
 }

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { systemRoutes } from './system'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,6 +20,7 @@ const router = createRouter({
           name: 'overview',
           component: () => import('@/views/OverView/index.vue')
         },
+        ...systemRoutes,
         {
           path: '/conversation',
           name: 'conversation',

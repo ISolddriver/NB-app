@@ -41,12 +41,14 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { useRouter } from 'vue-router';
 import { onMounted, reactive } from 'vue';
+
 import {
   handleLogin,
-  getImgLocation,
-  handleLoginout
-} from '@/apis/login';
+  // getImgLocation
+} from '@/apis/login.ts';
+import { setLoginInfo, getLoginInfo } from '@/utils/local.ts';
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
 
 interface FormState {
@@ -55,10 +57,10 @@ interface FormState {
   remember: boolean;
 }
 
-const formState = reactive<FormState>({
+let formState = reactive<FormState>({
   username: undefined,
   password: undefined,
-  remember: true,
+  remember: true
 })
 
 const onFinish = (values: any) => {
@@ -70,15 +72,28 @@ const onFinishFailed = (errorInfo: any) => {
 }
 
 onMounted(async () => {
-  handleLoginout({})
-  const res:object = await getImgLocation({})
+  // const res:object = await getImgLocation({})
+  const loginInfo = getLoginInfo()
+  if (loginInfo) {
+    formState = {
+      ...JSON.parse(loginInfo)
+    }
+  }
 })
-
+const router = useRouter()
 const login = async () => {
   const res = await handleLogin({
-    username: formState.username,
-    password: formState.password,})
-  console.log(res)
+    ...formState
+    // "x": 1099,
+    // "y": 432,
+    // "loginType": "string"
+  })
+  if (formState.remember) {
+    setLoginInfo(JSON.stringify(formState))
+  }
+  if (res.code === 200) {
+    router.push('/')
+  }
 }
 </script>
 
