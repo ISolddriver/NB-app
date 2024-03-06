@@ -47,8 +47,8 @@ import { onMounted, reactive } from 'vue';
 import {
   handleLogin,
   // getImgLocation
-} from '@/apis/login.ts';
-import { setLoginInfo, getLoginInfo } from '@/utils/local.ts';
+} from '@/apis/login';
+import { setLoginInfo, getLoginInfo } from '@/utils/local';
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
 
 interface FormState {

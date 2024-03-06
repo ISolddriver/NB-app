@@ -6,7 +6,7 @@ type Result<T> = {
   msg: string;
   data: T;
 };
-const baseURL = "http://10.168.9.66:8080";
+const baseURL = "http://10.168.9.66:8080/api";
 
 // 导出Request类，可以用来自定义传递配置来创建实例
 export class Request {

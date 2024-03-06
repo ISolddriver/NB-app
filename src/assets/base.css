@@ -96,3 +96,23 @@ body {
 p {
   margin-bottom: 0!important;
 }
+
+
+.reset-scroll::-webkit-scrollbar{
+  width:10px;
+  height:10px;
+}
+.reset-scrol::-webkit-scrollbar-track{
+  background: rgb(239, 239, 239);
+  border-radius:2px;
+}
+.reset-scrol::-webkit-scrollbar-thumb{
+  background: #bfbfbf;
+  border-radius:10px;
+}
+.reset-scrol::-webkit-scrollbar-thumb:hover{
+  background: #333;
+}
+.reset-scrol::-webkit-scrollbar-corner{
+  background: #179a16;
+}

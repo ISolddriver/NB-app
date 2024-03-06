@@ -6,7 +6,7 @@
         <img src="@/assets/NByangan.svg" alt="">
         <span v-if="!state.collapsed">Niu Bee</span>
       </div>
-      <div class="menu-container">
+      <div class="menu-container reset-scroll">
         <a-menu
           v-model:openKeys="state.openKeys"
           v-model:selectedKeys="state.selectedKeys"
