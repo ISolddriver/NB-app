@@ -4,7 +4,7 @@
       <div class="logo">
         <!-- <img src="@/assets/budaidise.svg" alt=""> -->
         <img src="@/assets/NByangan.svg" alt="">
-        <span v-if="!state.collapsed">New Bee</span>
+        <span v-if="!state.collapsed">Niu Bee</span>
       </div>
       <div class="menu-container">
         <a-menu
@@ -99,18 +99,24 @@ const items = reactive([
   {
     key: 'sub2',
     icon: () => h(AppstoreOutlined),
-    label: 'Navigation Two',
-    title: 'Navigation Two',
+    label: '系统设置',
     children: [
       {
         key: '9',
-        label: 'Option 9',
-        title: 'Option 9',
+        label: '用户管理',
+        path: '/userManagement'
       },
       {
         key: '10',
-        label: 'Option 10',
-        title: 'Option 10',
+        label: '角色管理'
+      },
+      {
+        key: '11',
+        label: '企微消息设置'
+      },
+      {
+        key: '12',
+        label: '存档信息设置'
       }
     ]
   }
@@ -157,9 +163,9 @@ const toggleCollapsed = () => {
       }
     }
     .menu-container {
-      min-height: calc(100vh - 64px);
+      height: calc(100vh - 64px);
       width: v-bind('state.collapsedWidth');
-      // overflow-y: scroll;
+      overflow-y: scroll;
     }
     .content {
       width: calc(100vw - v-bind('state.collapsedWidth'));
@@ -186,7 +192,8 @@ const toggleCollapsed = () => {
       }
       main {
         padding: 8px;
-
+        height: calc(100vh - 64px);
+        overflow-y: scroll;
       }
     }
   }

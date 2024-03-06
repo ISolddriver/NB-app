@@ -3,7 +3,7 @@
     <div class="user-layout">
       <div class="top">
         <img class="logo" src="@/assets/NByangan.svg" alt="">
-        <span>New Bee</span>
+        <span>Niu Bee</span>
       </div>
       <a-form
         :model="formState"

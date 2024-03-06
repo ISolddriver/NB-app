@@ -1,3 +1,5 @@
+
+import type { handleLogin } from '@/apis/login';
 <template>
   <div class="base-card query">
     <a-input style="width: 240px" v-model:value="query.username" placeholder="请输入用户名或账号" />
@@ -5,10 +7,14 @@
     <a-button style="margin-left: 16px" >新增</a-button>
   </div>
   <div class="base-card table">
-    <a-table :columns="columns" :data-source="data" bordered>
-      <template #bodyCell="{ column, text }">
-        <template v-if="column.dataIndex === 'name'">
-          <a>{{ text }}</a>
+    <a-table :columns="columns" :data-source="data" bordered :pagination="pagination">
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'isOpen'">
+          <a-switch v-model:checked="record.isOpen"  @change="handleIsOpenChange" />
+        </template>
+        <template v-if="column.dataIndex === 'operate'">
+          <a-button type="link"><FormOutlined />编辑</a-button>
+          <a-button type="link"><DeleteOutlined />删除</a-button>
         </template>
       </template>
     </a-table>
@@ -17,55 +23,125 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import type { SelectProps } from 'ant-design-vue'
+import { FormOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 interface columnData {
   title: string;
   dataIndex: string;
   className?: string;
 }
+const pagination:object = reactive({
+  total: 0,
+  current: 1,
+  pageSize: 10,
+  showPageSize: true
+})
+
 const columns:Array<columnData> = [
   {
     title: '用户名',
-    dataIndex: 'name'
+    dataIndex: 'userName'
   },
   {
     title: '账号',
-    dataIndex: 'money'
+    dataIndex: 'acount'
   },
   {
     title: '角色',
-    dataIndex: 'address'
+    dataIndex: 'roleName'
   },
   {
     title: '创建时间',
-    dataIndex: 'address'
+    dataIndex: 'createTime'
   },
   {
     title: '启用',
-    dataIndex: 'address'
+    dataIndex: 'isOpen'
   },
   {
     title: '操作',
-    dataIndex: 'address'
-  },
+    dataIndex: 'operate'
+  }
 ];
 const data = [
   {
     key: '1',
-    name: 'John Brown',
-    money: '￥300,000.00',
-    address: 'New York No. 1 Lake Park',
+    userName: 'John Brown',
+    acount: 'admin',
+    roleName: '管理员',
+    createTime: '2022-01-01 12:00:00',
+    isOpen: true
   },
   {
     key: '2',
-    name: 'Jim Green',
-    money: '￥1,256,000.00',
-    address: 'London No. 1 Lake Park',
+    userName: 'Jim Green',
+    acount: 'admin',
+    roleName: '管理员',
+    createTime: '2022-01-01 12:00:00',
+    isOpen: true
   },
   {
-    key: '3',
-    name: 'Joe Black',
-    money: '￥120,000.00',
-    address: 'Sidney No. 1 Lake Park',
+    key: '1',
+    userName: 'John Brown',
+    acount: 'admin',
+    roleName: '管理员',
+    createTime: '2022-01-01 12:00:00',
+    isOpen: true
+  },
+  {
+    key: '2',
+    userName: 'Jim Green',
+    acount: 'admin',
+    roleName: '管理员',
+    createTime: '2022-01-01 12:00:00',
+    isOpen: true
+  },
+  {
+    key: '1',
+    userName: 'John Brown',
+    acount: 'admin',
+    roleName: '管理员',
+    createTime: '2022-01-01 12:00:00',
+    isOpen: true
+  },
+  {
+    key: '2',
+    userName: 'Jim Green',
+    acount: 'admin',
+    roleName: '管理员',
+    createTime: '2022-01-01 12:00:00',
+    isOpen: true
+  },
+  {
+    key: '1',
+    userName: 'John Brown',
+    acount: 'admin',
+    roleName: '管理员',
+    createTime: '2022-01-01 12:00:00',
+    isOpen: true
+  },
+  {
+    key: '1',
+    userName: 'John Brown',
+    acount: 'admin',
+    roleName: '管理员',
+    createTime: '2022-01-01 12:00:00',
+    isOpen: true
+  },
+  {
+    key: '2',
+    userName: 'Jim Green',
+    acount: 'admin',
+    roleName: '管理员',
+    createTime: '2022-01-01 12:00:00',
+    isOpen: true
+  },
+  {
+    key: '1',
+    userName: 'John Brown',
+    acount: 'admin',
+    roleName: '管理员',
+    createTime: '2022-01-01 12:00:00',
+    isOpen: true
   },
 ];
 const query = reactive({
@@ -87,8 +163,7 @@ const options = ref<SelectProps['options']>([
   }
 ])
 
-const handleChange = (value: string) => {
-  query.value = value
+const handleIsOpenChange = (value: any) => {
   console.log(`selected ${value}`);
 }
 </script>
