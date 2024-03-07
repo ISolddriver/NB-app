@@ -93,6 +93,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.mb8 {
+  margin-bottom: 8px;
+}
+.mb16 {
+  margin-bottom: 16px;
+}
+.mr8 {
+  margin-right: 8px;
+}
+.ml8 {
+  margin-left: 8px;
+}
+
 p {
   margin-bottom: 0!important;
 }
@@ -115,4 +128,10 @@ p {
 }
 .reset-scrol::-webkit-scrollbar-corner{
   background: #179a16;
+}
+
+
+.ant-drawer-footer {
+  display: flex;
+  justify-content: flex-end;
 }

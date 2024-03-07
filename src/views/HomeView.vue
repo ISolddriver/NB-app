@@ -108,15 +108,18 @@ const items = reactive([
       },
       {
         key: '10',
-        label: '角色管理'
+        label: '角色管理',
+        path: '/roleManagement'
       },
       {
         key: '11',
-        label: '企微消息设置'
+        label: '企微消息设置',
+        path: '/qwChatSetting'
       },
       {
         key: '12',
-        label: '存档信息设置'
+        label: '存档信息设置',
+        path: '/archiveSettings'
       }
     ]
   }
