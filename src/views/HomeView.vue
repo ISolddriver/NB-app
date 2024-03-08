@@ -44,86 +44,50 @@
         </a-dropdown>
       </header>
       <main>
-        <a-breadcrumb>
-          <a-breadcrumb-item>Home</a-breadcrumb-item>
-          <a-breadcrumb-item>Page</a-breadcrumb-item>
-        </a-breadcrumb>
+        <div class="menu-bread">
+          <a-tabs
+            v-model:activeKey="activeKey"
+            hide-add
+            type="editable-card"
+            :tab-position="mode"
+            @edit="handleEdit"
+            @change="handleToPath"
+          >
+            <a-tab-pane
+              v-for="pane in chooseMenus"
+              :key="pane.key"
+              :tab="pane.title"
+              :closable="pane.closable"
+              >
+            </a-tab-pane>
+          </a-tabs>
+        </div>
         <RouterView />
       </main>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import { RouterView, useRouter } from 'vue-router'
-import { reactive, watch, h, handleError } from 'vue';
 import {
-  CommentOutlined,
-  AppstoreOutlined,
   UserOutlined,
   MenuFoldOutlined
 } from '@ant-design/icons-vue';
+import { menus } from '@/consts/menu'
+import type { TabsProps } from 'ant-design-vue';
+const mode = ref<TabsProps['tabPosition']>('top');
 const state = reactive({
   collapsed: false,
   collapsedWidth: '256px', // 80
   selectedKeys: ['1'],
-  openKeys: ['sub1'],
-  preOpenKeys: ['sub1'],
+  openKeys: [],
+  preOpenKeys: [],
 });
-const items = reactive([
-  {
-    key: '1',
-    icon: () => h(AppstoreOutlined),
-    label: '首页',
-    path: '/'
-  },
-  {
-    key: 'sub1',
-    icon: () => h(CommentOutlined),
-    label: '会话存档',
-    children: [
-      {
-        key: '2',
-        label: '会话内容',
-        path: '/conversation'
-      },
-      {
-        key: '3',
-        label: '存档记录'
-      },
-      {
-        key: '4',
-        label: '存档范围',
-      }
-    ],
-  },
-  {
-    key: 'sub2',
-    icon: () => h(AppstoreOutlined),
-    label: '系统设置',
-    children: [
-      {
-        key: '9',
-        label: '用户管理',
-        path: '/userManagement'
-      },
-      {
-        key: '10',
-        label: '角色管理',
-        path: '/roleManagement'
-      },
-      {
-        key: '11',
-        label: '企微消息设置',
-        path: '/qwChatSetting'
-      },
-      {
-        key: '12',
-        label: '存档信息设置',
-        path: '/archiveSettings'
-      }
-    ]
-  }
-])
+const items = menus
+const chooseMenus = ref<{ title: any; key: string; closable?: boolean }[]>([
+  { title: '首页', key: '/', closable: false }
+]);
+const activeKey = ref('/');
+
 const router = useRouter()
 // watch(
 //   () => state.openKeys,
@@ -131,6 +95,55 @@ const router = useRouter()
 //     state.preOpenKeys = oldVal
 //   }
 // )
+const handleChooseMenu = (path: any) => {
+  activeKey.value = path
+  if (path === '/') {
+    state.selectedKeys = ['1']
+    state.openKeys = ['']
+  }
+  items.forEach((item: any) => {
+    if (item.children) {
+      item.children.forEach((child: any) => {
+        if (child.path === path) {
+          state.selectedKeys = [child.key]
+          state.openKeys = [item.key]
+        }
+      })
+    }
+  })
+}
+const handleToPath = (path: string) => {
+  router.push(path)
+}
+const handleEdit = (targetKey: string, action: string) => {
+  if (action === 'remove') {
+    remove(targetKey)
+  }
+}
+const remove = (targetKey: string) => {
+  let lastIndex = 0;
+  chooseMenus.value.forEach((pane, i) => {
+    if (pane.key === targetKey) {
+      lastIndex = i - 1;
+    }
+  });
+  chooseMenus.value = chooseMenus.value.filter(pane => pane.key !== targetKey);
+  if (chooseMenus.value.length && activeKey.value === targetKey) {
+    if (lastIndex >= 0) {
+      activeKey.value = chooseMenus.value[lastIndex].key;
+    } else {
+      activeKey.value = chooseMenus.value[0].key;
+    }
+  }
+  router.push(activeKey.value)
+}
+watch(() => router.currentRoute.value, (to, from) => {
+  handleChooseMenu(to.path)
+  if (to.path === '/') return
+  const findItem = chooseMenus.value.find((item: any) => item.key === to.path)
+  !findItem && chooseMenus.value.push({ key: to.path, title: to.meta.title })
+}, { immediate: true })
+
 const handleMenuSelect = (item: any) => {
   const path: string = item.item.path || ''
   router.push(path)
@@ -197,6 +210,16 @@ const toggleCollapsed = () => {
         padding: 8px;
         height: calc(100vh - 64px);
         overflow-y: scroll;
+        .menu-bread {
+          // margin-bottom: 8px;
+          // width: calc(100vw - v-bind('state.collapsedWidth') - 16px);
+          &::v-deep .ant-tabs-nav {
+            margin-bottom: 0px!important;
+          }
+          &::v-deep .ant-tabs-nav::before {
+            border-bottom: none;
+          }
+        }
       }
     }
   }

@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import { systemRoutes } from './system'
+import { systemRoutes } from './modules/system'
+import { sessionRoutes } from './modules/session'
+import { sensitiveWordRoutes } from './modules/sensitiveWord'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,6 +10,9 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
+      meta: {
+        title: '登录'
+      },
       component: () => import('@/views/LoginView.vue')
     },
     {
@@ -18,14 +23,14 @@ const router = createRouter({
         {
           path: '/',
           name: 'overview',
+          meta: {
+            title: '首页'
+          },
           component: () => import('@/views/OverView/index.vue')
         },
         ...systemRoutes,
-        {
-          path: '/conversation',
-          name: 'conversation',
-          component: () => import('@/views/ConversationContent/index.vue')
-        }
+        ...sessionRoutes,
+        ...sensitiveWordRoutes
       ]
     }
   ]
