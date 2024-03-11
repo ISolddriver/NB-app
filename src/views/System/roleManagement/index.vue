@@ -75,6 +75,7 @@ import type { handleLogin } from '@/apis/login';
 </template>
 <script setup lang="ts">
 import { FormOutlined, DeleteOutlined } from '@ant-design/icons-vue';
+import { getRoleList } from '@/apis/system/user.ts'
 import type { TreeProps } from 'ant-design-vue';
 interface columnData {
   title: string;
@@ -95,11 +96,11 @@ const columns:Array<columnData> = [
   },
   {
     title: '角色Code',
-    dataIndex: 'roleCode'
+    dataIndex: 'roleKey'
   },
   {
     title: '权限描述',
-    dataIndex: 'roleDesc'
+    dataIndex: 'remark'
   },
   {
     title: '操作',
@@ -110,8 +111,8 @@ const data = [
   {
     key: '1',
     roleName: '管理员',
-    roleCode: 'admin',
-    roleDesc: '全部权限'
+    roleKey: 'admin',
+    remark: '全部权限'
   }
 ];
 const query = reactive({
@@ -202,6 +203,13 @@ watch(selectedKeys, () => {
 watch(checkedKeys, () => {
   console.log('checkedKeys', checkedKeys);
 });
+
+onMounted(() => {
+  getRoleList({
+    pageNum: 1,
+    pageSize: 10
+  })
+})
 
 </script>
 <style scoped lang="less">
