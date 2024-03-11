@@ -1,12 +1,14 @@
 import axios from "axios";
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import { getToken, setToken } from "@/utils/local";
 
 type Result<T> = {
   code: number;
   msg: string;
   data: T;
 };
-const baseURL = "http://10.168.9.66:8080/api";
+const baseURL = "http://10.168.9.66:8080";
+const router = useRouter();
 
 // 导出Request类，可以用来自定义传递配置来创建实例
 export class Request {
@@ -22,10 +24,10 @@ export class Request {
     this.instance.interceptors.request.use(
       (config: AxiosRequestConfig) => {
         // 一般会请求拦截里面加token，用于后端的验证
-        // const token = localStorage.getItem("token") as string
-        // if(token) {
-        //   config.headers!.Authorization = token;
-        // }
+        const token = getToken()
+        if(token) {
+          config.headers!.Authorization = `Bearer ${token}`;
+        }
         return config;
       },
       (err: any) => {
@@ -50,6 +52,8 @@ export class Request {
           case 401:
             message = "未授权，请重新登录(401)";
             // 这里可以做清空storage并跳转到登录页的操作
+            setToken("");
+            router.push({ path: "/login" });
             break;
           case 403:
             message = "拒绝访问(403)";

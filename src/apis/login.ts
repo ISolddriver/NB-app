@@ -5,9 +5,9 @@ export function handleLogin (data: any) {
 }
 
 export function handleLoginout (data: any) {
-  return Request.get('/auth/logout')
+  return Request.get('/auth/logout', data)
 }
 
 export function getImgLocation (data: any) {
-  return Request.get('/captcha/getCutImage')
+  return Request.get('/captcha/getCutImage', data)
 }

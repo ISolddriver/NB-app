@@ -213,10 +213,10 @@ const toggleCollapsed = () => {
         .menu-bread {
           // margin-bottom: 8px;
           // width: calc(100vw - v-bind('state.collapsedWidth') - 16px);
-          &::v-deep .ant-tabs-nav {
+          :deep(.ant-tabs-nav) {
             margin-bottom: 0px!important;
           }
-          &::v-deep .ant-tabs-nav::before {
+          :deep(.ant-tabs-nav::before) {
             border-bottom: none;
           }
         }

@@ -14,3 +14,11 @@ export function setLoginInfo(value: string) {
 export function getLoginInfo() {
   return getLocalStorage('page-login-info');
 }
+
+export function setToken(value: string) {
+  setLocalStorage('niubee-token', value);
+}
+
+export function getToken() {
+  return getLocalStorage('niubee-token');
+}

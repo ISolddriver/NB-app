@@ -48,7 +48,7 @@ import {
   handleLogin,
   // getImgLocation
 } from '@/apis/login';
-import { setLoginInfo, getLoginInfo } from '@/utils/local';
+import { setLoginInfo, getLoginInfo, setToken } from '@/utils/local';
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
 
 interface FormState {
@@ -92,6 +92,7 @@ const login = async () => {
     setLoginInfo(JSON.stringify(formState))
   }
   if (res.code === 200) {
+    setToken(res.data.accessToken)
     router.push('/')
   }
 }

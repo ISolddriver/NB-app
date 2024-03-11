@@ -3,18 +3,27 @@ import type { handleLogin } from '@/apis/login';
 <template>
   <div class="base-card query">
     <a-input style="width: 240px" v-model:value="query.username" placeholder="请输入用户名或账号" />
-    <a-button style="margin-left: 16px" type="primary">查询</a-button>
-    <a-button style="margin-left: 16px" @click="handleAdd">新增</a-button>
+    <a-button style="margin-left: 16px" type="primary" @click="handleSeach">查询</a-button>
+    <a-button style="margin-left: 16px" @click="handleAdd"><PlusOutlined />新增</a-button>
   </div>
   <div class="base-card table">
-    <a-table :columns="columns" :data-source="data" bordered :pagination="pagination">
+    <a-table
+      :columns="columns"
+      :data-source="data"
+      bordered
+      :pagination="pagination"
+      @change="handleTableChange"
+    >
       <template #bodyCell="{ column, record }">
-        <template v-if="column.dataIndex === 'isOpen'">
-          <a-switch v-model:checked="record.isOpen"  @change="handleIsOpenChange" />
+        <template v-if="column.dataIndex === 'status'">
+          <a-switch v-model:checked="record.status" :checkedValue="1" :unCheckedValue="2"  @change="handleIsOpenChange" />
+        </template>
+        <template v-if="column.dataIndex === 'roleName'">
+          <span>{{ record.roleInfo.map(i => i.roleName).join(',') }}</span>
         </template>
         <template v-if="column.dataIndex === 'operate'">
-          <a-button type="link"><FormOutlined />编辑</a-button>
-          <a-button type="link"><DeleteOutlined />删除</a-button>
+          <a-button @click="handleEdit(record)" type="link"><FormOutlined />编辑</a-button>
+          <a-button @click="handleDelete(record.userId)" type="link"><DeleteOutlined />删除</a-button>
         </template>
       </template>
     </a-table>
@@ -25,6 +34,7 @@ import type { handleLogin } from '@/apis/login';
       :title="drawTitle"
       placement="right"
       :closable="false"
+      width="500"
     >
       <a-form
         ref="formRef"
@@ -37,18 +47,18 @@ import type { handleLogin } from '@/apis/login';
       >
         <a-form-item
           label="用户名"
-          name="username"
+          name="nickName"
           :rules="[{ required: true, message: '请输入用户名!' }]"
         >
-          <a-input v-model:value="formState.username" />
+          <a-input v-model:value="formState.nickName" />
         </a-form-item>
 
         <a-form-item
           label="账号"
-          name="acount"
+          name="userName"
           :rules="[{ required: true, message: '请输入账号!' }]"
         >
-          <a-input v-model:value="formState.acount" />
+          <a-input v-model:value="formState.userName" />
         </a-form-item>
 
         <a-form-item
@@ -59,12 +69,21 @@ import type { handleLogin } from '@/apis/login';
         </a-form-item>
 
         <a-form-item
-          label="用户角色"
-          name="roleType"
-          :rules="[{ required: true, message: '请选择角色!' }]"
+          label="企业员工ID"
+          name="corpUserId"
+          :rules="[{ required: true, message: '请输入企业员工ID!' }]"
         >
-          <a-select v-model:value="formState.roleType">
-            <a-select-option value="1">管理员</a-select-option>
+          <a-input v-model:value="formState.corpUserId" />
+        </a-form-item>
+
+        <a-form-item
+          label="用户角色"
+          name="roleIds"
+          :rules="[{ required: true, message: '请选择角色!' }]"
+          placeholder="请选择角色"
+        >
+          <a-select v-model:value="formState.roleIds" mode="multiple">
+            <a-select-option v-for="item in roleList" :key="item.roleId" :value="item.roleId">{{ item.roleName }}</a-select-option>
           </a-select>
         </a-form-item>
       </a-form>
@@ -76,9 +95,10 @@ import type { handleLogin } from '@/apis/login';
   </div>
 </template>
 <script setup lang="ts">
-import type { SelectProps } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form';
-import { FormOutlined, DeleteOutlined } from '@ant-design/icons-vue';
+import { FormOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import { message } from 'ant-design-vue';
+import { getList, addUser, deleteUser, editUser, getRoleList } from '@/apis/system/user.ts'
 interface columnData {
   title: string;
   dataIndex: string;
@@ -94,11 +114,11 @@ const pagination = reactive({
 const columns:Array<columnData> = [
   {
     title: '用户名',
-    dataIndex: 'userName'
+    dataIndex: 'nickName'
   },
   {
     title: '账号',
-    dataIndex: 'acount'
+    dataIndex: 'userName'
   },
   {
     title: '角色',
@@ -110,55 +130,25 @@ const columns:Array<columnData> = [
   },
   {
     title: '启用',
-    dataIndex: 'isOpen'
+    dataIndex: 'status'
   },
   {
     title: '操作',
     dataIndex: 'operate'
   }
 ];
-const data = [
-  {
-    key: '1',
-    userName: 'John Brown',
-    acount: 'admin',
-    roleName: '管理员',
-    createTime: '2022-01-01 12:00:00',
-    isOpen: true
-  },
-  {
-    key: '2',
-    userName: 'Jim Green',
-    acount: 'admin',
-    roleName: '管理员',
-    createTime: '2022-01-01 12:00:00',
-    isOpen: true
-  }
-];
+let data = ref<any[]>([]);
+let roleList = ref<any[]>([]);
 const query = reactive({
   username: ''
 })
 
-const options = ref<SelectProps['options']>([
-  {
-    value: '',
-    label: '全部',
-  },
-  {
-    value: '1',
-    label: 'Jack',
-  },
-  {
-    value: '2',
-    label: 'Tom',
-  }
-])
 
 const handleIsOpenChange = (value: any) => {
   console.log(`selected ${value}`);
 }
 let open = ref<boolean>(false)
-const drawTitle = ref<string>('新增用户')
+let drawTitle = ref<string>('新增用户')
 const formRef = ref()
 const validatePass = async (_rule: Rule, value: string) => {
   if (value === '') {
@@ -175,27 +165,80 @@ const rules: Record<string, Rule[]> = {
   password: [{ required: true, validator: validatePass, trigger: 'change' }]
 };
 interface FormState {
-  username: string
+  nickName: string
   password: string
-  acount: string
-  roleType: string | number
+  userName: string
+  roleIds: Array<any>,
+  corpUserId: string,
+  userId?: string | number
 }
 
-const formState = reactive<FormState>({
-  username: '',
+let formState = reactive<FormState>({
+  nickName: '',
   password: '',
-  acount: '',
-  roleType: ''
+  userName: '',
+  roleIds: [],
+  corpUserId: '',
+  userId: ''
 })
-
+const handleSeach = async (pagination: any) => {
+  const res = await getList({
+    ...query,
+    pageNum: pagination.current,
+    pageSize: pagination.pageSize
+  })
+  data.value = res.data.list
+  pagination.current = res.data.pageNum
+  pagination.total = res.data.total
+}
 const handleAdd = () => {
+  drawTitle.value = '新增用户'
   open.value = true
+}
+const handleDelete = async (userId: string | number) => {
+  console.log(userId, '1111')
+  const res = await deleteUser({ userId })
+  if (res.code === 200) {
+    message.success('删除成功')
+    handleSeach({ current: 1, pageSize: 10 })
+    return
+  }
+  message.error('删除失败')
+}
+const handleEdit = (record: any) => {
+  drawTitle.value = '编辑用户'
+  open.value = true
+  formState = {
+    nickName: record.nickName,
+    password: record.password,
+    userName: record.userName,
+    roleIds: record.roleInfo.map(i => i.roleId),
+    corpUserId: record.corpUserId,
+    userId: record.userId
+  }
+}
+const handleTableChange = (pagination: any) => {
+  handleSeach(pagination)
 }
 const handleSubmit = () => {
   formRef.value
     .validate()
-    .then(() => {
-      console.log('values', formState, toRaw(formState));
+    .then(async () => {
+      console.log('values', formState);
+      const fn = formState.userId ? editUser : addUser
+      const res = await fn({
+        ...formState
+      })
+      if (res.code === 200) {
+        message.success('操作成功！')
+        closeDrawer()
+        handleSeach({
+          current: 1,
+          pageSize: 10
+        })
+        return
+      }
+      message.error('操作失败！')
     })
     .catch(error => {
       console.log('error', error);
@@ -203,9 +246,30 @@ const handleSubmit = () => {
 }
 const closeDrawer = () => {
   formRef.value.resetFields()
+  formState = reactive({
+    nickName: '',
+    password: '',
+    userName: '',
+    roleIds: [],
+    corpUserId: '',
+    userId: ''
+  })
   open.value = false
 }
 
+onMounted(() => {
+  handleSeach({
+    current: 1,
+    pageSize: 10
+  })
+})
+
+watch(open, async (val) => {
+  if (val) {
+    const res = await getRoleList({})
+    roleList.value = res.data.list
+  }
+})
 
 </script>
 <style scoped lang="less">
