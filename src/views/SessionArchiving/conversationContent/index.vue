@@ -7,7 +7,7 @@
     </a-radio-group>
   </div>
   <div class="base-card query">
-    <a-input placeholder="请输入姓名" v-model:value="query.name" style="width: 200px;" />
+    <a-input :placeholder="placeholderMap[type]" v-model:value="query.name" style="width: 200px;" />
     <a-button style="margin-left: 16px" type="primary">查询</a-button>
   </div>
   <div class="base-card table">
@@ -55,6 +55,11 @@ const funMap = {
   '1': getUserList,
   '2': getRoomList,
   '3': getCustomerList
+}
+const placeholderMap = {
+  '1': '请输入员工姓名',
+  '2': '请输入群名称',
+  '3': '请输入客户名称'
 }
 const itemMap = {
   '1': {
