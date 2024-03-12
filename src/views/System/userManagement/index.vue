@@ -9,10 +9,11 @@ import type { handleLogin } from '@/apis/login';
   <div class="base-card table">
     <a-table
       :columns="columns"
-      :data-source="data"
+      :data-source="tableData"
       bordered
       :pagination="pagination"
       @change="handleTableChange"
+      :loading="loading"
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'status'">
@@ -98,52 +99,19 @@ import type { handleLogin } from '@/apis/login';
 import type { Rule } from 'ant-design-vue/es/form';
 import { FormOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-import { getList, addUser, deleteUser, editUser, getRoleList } from '@/apis/system/user.ts'
-interface columnData {
-  title: string;
-  dataIndex: string;
-  className?: string;
-}
-const pagination = reactive({
-  total: 0,
-  current: 1,
-  pageSize: 10,
-  showPageSize: true
-})
+import { getList, addUser, deleteUser, editUser, getRoleList } from '@/apis/system/user'
+import { useFetchList } from '@/hooks/table/useFetchList'
+import { columns } from './consts/tableColumns'
 
-const columns:Array<columnData> = [
-  {
-    title: '用户名',
-    dataIndex: 'nickName'
-  },
-  {
-    title: '账号',
-    dataIndex: 'userName'
-  },
-  {
-    title: '角色',
-    dataIndex: 'roleName'
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'createTime'
-  },
-  {
-    title: '启用',
-    dataIndex: 'status'
-  },
-  {
-    title: '操作',
-    dataIndex: 'operate'
-  }
-];
-let data = ref<any[]>([]);
-let roleList = ref<any[]>([]);
 const query = reactive({
-  username: ''
+  username: '' 
+})
+const { tableData, handleSeach, handleTableChange, pagination, loading } = useFetchList(getList, query)
+onMounted(() => {
+  handleSeach()
 })
 
-
+let roleList = ref<any[]>([]);
 const handleIsOpenChange = (value: any) => {
   console.log(`selected ${value}`);
 }
@@ -172,7 +140,6 @@ interface FormState {
   corpUserId: string,
   userId?: string | number
 }
-
 let formState = reactive<FormState>({
   nickName: '',
   password: '',
@@ -181,22 +148,13 @@ let formState = reactive<FormState>({
   corpUserId: '',
   userId: ''
 })
-const handleSeach = async (pagination: any) => {
-  const res = await getList({
-    ...query,
-    pageNum: pagination.current,
-    pageSize: pagination.pageSize
-  })
-  data.value = res.data.list
-  pagination.current = res.data.pageNum
-  pagination.total = res.data.total
-}
+
+
 const handleAdd = () => {
   drawTitle.value = '新增用户'
   open.value = true
 }
 const handleDelete = async (userId: string | number) => {
-  console.log(userId, '1111')
   const res = await deleteUser({ userId })
   if (res.code === 200) {
     message.success('删除成功')
@@ -217,9 +175,7 @@ const handleEdit = (record: any) => {
     userId: record.userId
   }
 }
-const handleTableChange = (pagination: any) => {
-  handleSeach(pagination)
-}
+
 const handleSubmit = () => {
   formRef.value
     .validate()
@@ -257,13 +213,6 @@ const closeDrawer = () => {
   open.value = false
 }
 
-onMounted(() => {
-  handleSeach({
-    current: 1,
-    pageSize: 10
-  })
-})
-
 watch(open, async (val) => {
   if (val) {
     const res = await getRoleList({})
@@ -285,4 +234,4 @@ th.column-money,
 td.column-money {
   text-align: right !important;
 }
-</style>
+</style>@/hooks/list/useFetchList@/hooks/table/useFetchList

@@ -3,11 +3,18 @@ import type { handleLogin } from '@/apis/login';
 <template>
   <div class="base-card query">
     <a-input style="width: 240px" v-model:value="query.roleName" placeholder="请输入角色名称" />
-    <a-button style="margin-left: 16px" type="primary">查询</a-button>
+    <a-button style="margin-left: 16px" type="primary" @click="handleSeach">查询</a-button>
     <a-button style="margin-left: 16px" @click="handleAdd">新增</a-button>
   </div>
   <div class="base-card table">
-    <a-table :columns="columns" :data-source="data" bordered :pagination="pagination">
+    <a-table
+      :columns="columns"
+      :data-source="tableData"
+      bordered
+      :pagination="pagination"
+      @change="handleTableChange"
+      :loading="loading"
+    >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'operate'">
           <a-button type="link"><FormOutlined />编辑</a-button>
@@ -77,51 +84,17 @@ import type { handleLogin } from '@/apis/login';
 import { FormOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 import { getRoleList } from '@/apis/system/user.ts'
 import type { TreeProps } from 'ant-design-vue';
-interface columnData {
-  title: string;
-  dataIndex: string;
-  className?: string;
-}
-const pagination = reactive({
-  total: 0,
-  current: 1,
-  pageSize: 10,
-  showPageSize: true
-})
+import { useFetchList } from '@/hooks/table/useFetchList'
+import { columns } from './consts/tableColumns'
 
-const columns:Array<columnData> = [
-  {
-    title: '角色名称',
-    dataIndex: 'roleName'
-  },
-  {
-    title: '角色Code',
-    dataIndex: 'roleKey'
-  },
-  {
-    title: '权限描述',
-    dataIndex: 'remark'
-  },
-  {
-    title: '操作',
-    dataIndex: 'operate'
-  }
-];
-const data = [
-  {
-    key: '1',
-    roleName: '管理员',
-    roleKey: 'admin',
-    remark: '全部权限'
-  }
-];
 const query = reactive({
   roleName: ''
 })
+const { tableData, handleSeach, handleTableChange, pagination, loading } = useFetchList(getRoleList, query)
+onMounted(() => {
+  handleSeach()
+})
 
-const handleIsOpenChange = (value: any) => {
-  console.log(`selected ${value}`);
-}
 let open = ref<boolean>(false)
 const drawTitle = ref<string>('新增角色')
 const formRef = ref()
@@ -203,13 +176,6 @@ watch(selectedKeys, () => {
 watch(checkedKeys, () => {
   console.log('checkedKeys', checkedKeys);
 });
-
-onMounted(() => {
-  getRoleList({
-    pageNum: 1,
-    pageSize: 10
-  })
-})
 
 </script>
 <style scoped lang="less">

@@ -1,6 +1,7 @@
 import axios from "axios";
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { getToken, setToken } from "@/utils/local";
+import router from "@/router";
 
 type Result<T> = {
   code: number;
@@ -8,7 +9,6 @@ type Result<T> = {
   data: T;
 };
 const baseURL = "http://10.168.9.66:8080";
-const router = useRouter();
 
 // 导出Request类，可以用来自定义传递配置来创建实例
 export class Request {
@@ -40,11 +40,17 @@ export class Request {
       (res: AxiosResponse) => {
         // 直接返回res，当然你也可以只返回res.data
         // 系统如果有自定义code也可以在这里处理
+        if (res.data.code === 401) {
+          setToken('');
+          router.push('/login');
+          return
+        }
         return res.data;
       },
       (err: any) => {
         // 这里用来处理http常见错误，进行全局提示
         let message = "";
+        console.log(err, '111res')
         switch (err.response.status) {
           case 400:
             message = "请求错误(400)";
