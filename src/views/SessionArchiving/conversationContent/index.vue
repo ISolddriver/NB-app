@@ -7,17 +7,17 @@
     </a-radio-group>
   </div>
   <div class="base-card query">
-    <a-input :placeholder="placeholderMap[type]" v-model:value="query.name" style="width: 200px;" />
-    <a-button style="margin-left: 16px" type="primary">查询</a-button>
+    <a-input :placeholder="placeholderMap[type]" v-model:value="value" style="width: 200px;" />
+    <a-button style="margin-left: 16px" type="primary" @click="tableConfig.handleSeach">查询</a-button>
   </div>
   <div class="base-card table">
     <a-table
       :columns="columns"
-      :data-source="tableData"
+      :data-source="tableConfig.tableData"
       bordered
-      :pagination="pagination"
-      :loading="loading"
-      @change="handleTableChange"
+      :pagination="tableConfig.pagination"
+      :loading="tableConfig.loading"
+      @change="tableConfig.handleTableChange"
     >
       <template #bodyCell="{ column }">
         <template v-if="column.dataIndex === 'operate'">
@@ -79,18 +79,44 @@ const itemMap = {
   }
 }
 
-const type = ref<string>('1');
-const query = reactive({
+const queryKeyMap = {
+  '1': 'name',
+  '2': 'roomName',
+  '3': 'customerName'
+}
+
+interface queryData {
+  name?: string,
+  roomName?: string,
+  customerName?: string
+}
+let query = reactive<queryData>({
   name: ''
 })
 
-const { tableData, handleSeach, handleTableChange, pagination, loading } = useFetchList(getUserList, query)
+const type = ref<string>('1');
+const value = ref<string>('')
+
+let tableConfig = reactive(useFetchList(getUserList, query))
+onMounted(() => {
+  tableConfig.handleSeach()
+})
+
 
 watch(type, (newVal) => {
   columns.splice(0, 1, itemMap[newVal])
-  const { tableData, handleSeach, handleTableChange, pagination, loading } = useFetchList(funMap[newVal], query)
-  handleSeach()
-}, { immediate: true })
+  value.value = ''
+  query = {
+    [queryKeyMap[newVal]]: ''
+  }
+  tableConfig = reactive(useFetchList(getUserList, query))
+  tableConfig.handleSeach()
+})
+
+watch(value, (newVal) => {
+  query[queryKeyMap[type.value]] = newVal
+  tableConfig = reactive(useFetchList(getUserList, query))
+})
 
 </script>
 <style scoped lang="less">

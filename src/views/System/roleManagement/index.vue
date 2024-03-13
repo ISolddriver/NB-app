@@ -4,9 +4,9 @@ import type { handleLogin } from '@/apis/login';
   <div class="base-card query">
     <a-input style="width: 240px" v-model:value="query.roleName" placeholder="请输入角色名称" />
     <a-button style="margin-left: 16px" type="primary" @click="handleSeach">查询</a-button>
-    <a-button style="margin-left: 16px" @click="handleAdd">新增</a-button>
   </div>
   <div class="base-card table">
+    <a-button class="fr mb8" @click="handleAdd"><PlusOutlined />新增</a-button>
     <a-table
       :columns="columns"
       :data-source="tableData"
@@ -52,7 +52,7 @@ import type { handleLogin } from '@/apis/login';
           name="roleDesc"
           :rules="[{ required: true, message: '请输入账号!' }]"
         >
-          <a-textarea v-model:value="formState.roleDesc" show-count :maxlength="50" />
+          <a-textarea v-model:value="formState.roleDesc" :rows="4" show-count :maxlength="50" />
         </a-form-item>
 
         <a-form-item
@@ -81,7 +81,7 @@ import type { handleLogin } from '@/apis/login';
   </div>
 </template>
 <script setup lang="ts">
-import { FormOutlined, DeleteOutlined } from '@ant-design/icons-vue';
+import { FormOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import { getRoleList } from '@/apis/system/user.ts'
 import type { TreeProps } from 'ant-design-vue';
 import { useFetchList } from '@/hooks/table/useFetchList'

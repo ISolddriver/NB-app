@@ -105,6 +105,12 @@ body {
 .ml8 {
   margin-left: 8px;
 }
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
 
 p {
   margin-bottom: 0!important;

@@ -4,9 +4,9 @@ import type { handleLogin } from '@/apis/login';
   <div class="base-card query">
     <a-input style="width: 240px" v-model:value="query.username" placeholder="请输入用户名或账号" />
     <a-button style="margin-left: 16px" type="primary" @click="handleSeach">查询</a-button>
-    <a-button style="margin-left: 16px" @click="handleAdd"><PlusOutlined />新增</a-button>
   </div>
   <div class="base-card table">
+    <a-button class="mb8 fr" @click="handleAdd"><PlusOutlined />新增</a-button>
     <a-table
       :columns="columns"
       :data-source="tableData"
@@ -65,6 +65,7 @@ import type { handleLogin } from '@/apis/login';
         <a-form-item
           label="密码"
           name="password"
+          v-if="!formState.userId"
         >
           <a-input-password v-model:value="formState.password" />
         </a-form-item>
