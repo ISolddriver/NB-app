@@ -25,10 +25,12 @@
         </template>
       </template>
     </a-table>
+    <ChatContext />
   </div>
 </template>
 <script setup lang="ts">
 import { useFetchList } from '@/hooks/table/useFetchList'
+import ChatContext from '@/components/ChatContext/index.vue'
 import {
   getUserList,
   getRoomList,
@@ -127,9 +129,5 @@ watch(value, (newVal) => {
   padding: 16px;
   border-radius: 6px;
   background: #fff;
-}
-th.column-money,
-td.column-money {
-  text-align: right !important;
 }
 </style>

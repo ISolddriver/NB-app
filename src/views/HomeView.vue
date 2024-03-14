@@ -68,6 +68,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { getMenuList } from '@/apis/system/base';
 import {
   UserOutlined,
   MenuFoldOutlined
@@ -153,6 +154,18 @@ const toggleCollapsed = () => {
   state.openKeys = state.collapsed ? [] : state.preOpenKeys
   state.collapsedWidth = state.collapsed ? '80px' : '256px'
 }
+
+onMounted(() => {
+  /*
+    menuId
+    menuType = 'M' / 'C' 是菜单, 'F'是功能权限
+    name
+    parentId
+    path
+    icon
+  */
+  getMenuList({})
+})
 </script>
 
 <style lang="less" scoped>

@@ -17,8 +17,8 @@ import type { handleLogin } from '@/apis/login';
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'operate'">
-          <a-button type="link"><FormOutlined />编辑</a-button>
-          <a-button type="link"><DeleteOutlined />删除</a-button>
+          <a-button type="link" @click="handleEdit(record.roleId)"><FormOutlined />编辑</a-button>
+          <a-button type="link" @click="handleDelete(record.roleId)"><DeleteOutlined />删除</a-button>
         </template>
       </template>
     </a-table>
@@ -42,17 +42,17 @@ import type { handleLogin } from '@/apis/login';
         <a-form-item
           label="角色名"
           name="roleName"
-          :rules="[{ required: true, message: '请输入用户名!' }]"
+          :rules="[{ required: true, message: '请输入角色名!' }]"
         >
           <a-input v-model:value="formState.roleName" show-count :maxlength="15"/>
         </a-form-item>
 
         <a-form-item
           label="权限描述"
-          name="roleDesc"
-          :rules="[{ required: true, message: '请输入账号!' }]"
+          name="remark"
+          :rules="[{ required: true, message: '请输入权限描述!' }]"
         >
-          <a-textarea v-model:value="formState.roleDesc" :rows="4" show-count :maxlength="50" />
+          <a-textarea v-model:value="formState.remark" :rows="4" show-count :maxlength="50" />
         </a-form-item>
 
         <a-form-item
@@ -81,9 +81,9 @@ import type { handleLogin } from '@/apis/login';
   </div>
 </template>
 <script setup lang="ts">
-import { FormOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue';
-import { getRoleList } from '@/apis/system/user.ts'
-import type { TreeProps } from 'ant-design-vue';
+import { FormOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { getRoleList, addRole, editRole, deleteRole } from '@/apis/system/user'
+import { message, type TreeProps } from 'ant-design-vue'
 import { useFetchList } from '@/hooks/table/useFetchList'
 import { columns } from './consts/tableColumns'
 
@@ -101,24 +101,54 @@ const formRef = ref()
 
 interface FormState {
   roleName: string
-  roleDesc: string
-  permissions: any[]
+  remark: string
+  permissions: any[],
+  roleId: string | number
 }
 
 const formState = reactive<FormState>({
   roleName: '',
-  roleDesc: '',
-  permissions: []
+  remark: '',
+  permissions: [],
+  roleId: ''
 })
 
 const handleAdd = () => {
   open.value = true
+  drawTitle.value = '新增角色'
+}
+const handleEdit = (id: any) => {
+  drawTitle.value = '编辑角色'
+  open.value = true
+  formState.roleId = id
+}
+const handleDelete = async (roleId: string | number) => {
+  const res = await deleteRole({ roleId })
+  if (res.code === 200) {
+    message.success('删除成功')
+    handleSeach({ current: 1, pageSize: 10 })
+    return
+  }
+  message.error('删除失败')
 }
 const handleSubmit = () => {
   formRef.value
     .validate()
-    .then(() => {
-      console.log('values', formState, toRaw(formState));
+    .then(async () => {
+      const fn = formState.roleId ? editRole : addRole
+      const res = await fn({
+        ...formState
+      })
+      if (res.code === 200) {
+        message.success('操作成功！')
+        closeDrawer()
+        handleSeach({
+          current: 1,
+          pageSize: 10
+        })
+        return
+      }
+      message.error('操作失败！')
     })
     .catch(error => {
       console.log('error', error);

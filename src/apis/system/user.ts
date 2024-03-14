@@ -40,8 +40,3 @@ export function deleteRole (data: any) {
 export function addRole (data: any) {
   return Request.post('/system/role/add', data)
 }
-
-// 菜单
-export function getMenuList (data: any) {
-  return Request.get('/system/user/getRouters', data)
-}

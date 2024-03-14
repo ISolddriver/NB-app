@@ -10,15 +10,19 @@ export function useFetchList (fun: any, query: any) {
   const loading = ref(false)
   const handleSeach = async () => {
     loading.value = true
-    const res = await queryDataFun({
+    queryDataFun({
       ...query,
       pageNum: pagination.current,
       pageSize: pagination.pageSize
+    }).then((res: any) => {
+      loading.value = false
+      tableData.value = res.data.list
+      pagination.current = res.data.pageNum
+      pagination.total = res.data.total
+    }).finally(() => {
+      loading.value = false
     })
-    loading.value = false
-    tableData.value = res.data.list
-    pagination.current = res.data.pageNum
-    pagination.total = res.data.total
+    
   }
 
   const handleTableChange = (pageInfo: any) => {

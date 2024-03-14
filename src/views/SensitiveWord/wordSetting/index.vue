@@ -75,7 +75,7 @@
           <a-transfer
             v-model:target-keys="targetKeys"
             v-model:selected-keys="selectedKeys"
-            :data-source="mockData"
+            :data-source="userList"
             :titles="['全部成员', '生效成员']"
             :render="item => item.title"
             @selectChange="handleSelectChange"
@@ -98,6 +98,7 @@ import {
   deleteItem,
   edit
 } from '@/apis/sensitiveword/record'
+import { getList as getUserList } from '@/apis/system/user'
 import { columns } from './consts/columns'
 import { message } from 'ant-design-vue';
 import { editStatus } from '../../../apis/sensitiveword/record';
@@ -136,19 +137,7 @@ let open = ref<boolean>(false)
 const formRef = ref()
 let drawTitle = ref<string>('新增敏感词')
 
-interface MockData {
-  key: string;
-  title: string;
-  description?: string;
-  disabled?: boolean;
-}
-const mockData: MockData[] = [];
-for (let i = 0; i < 20; i++) {
-  mockData.push({
-    key: i.toString(),
-    title: `content${i + 1}`
-  });
-}
+const userList = ref<any[]>([]) 
 const targetKeys = ref<string[]>([]);
 const selectedKeys = ref<string[]>([])
 const handleSelectChange = (sourceSelectedKeys: string[], targetSelectedKeys: string[]) => {
@@ -164,6 +153,8 @@ const closeDrawer = () => {
     rangeType: 0,
     rangeList: []
   })
+  selectedKeys.value = []
+  targetKeys.value = []
   open.value = false
 }
 const handleAdd = () => {
@@ -241,6 +232,14 @@ const handleDelete = async (id: number) => {
 let tableConfig = reactive(useFetchList(getList, query))
 onMounted(() => {
   tableConfig.handleSeach()
+  getUserList({}).then(res => {
+    userList.value = res.data.list && res.data.list.map(item => {
+      return {
+        key: item.userId + '',
+        title: item.userName
+      }
+    })
+  })
 })
 
 </script>
