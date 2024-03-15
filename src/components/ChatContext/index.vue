@@ -56,9 +56,10 @@
             <a-range-picker style="width: 360px;" v-model:value="dateTime" show-time class="mr8" />
             <a-input
               v-model:value="chatContext"
-              placeholder="请输入关键词"
+              placeholder="关键词搜索"
               style="width: 120px"
               class="mr8"
+              allowClear
             />
             <a-select
               ref="select"
@@ -77,30 +78,52 @@
             </a-tooltip>
           </div>
           <div class="chats reset-scroll">
-            <div class="chat-item">
-              <a-avatar shape="square" class="avatar">
-                <template #icon><UserOutlined /></template>
-              </a-avatar>
-              <div>
-                <div class="chat-item-datetime">2024-03-14 14:22:03</div>
-                <div class="popover-card">
-                  <div class="popover-card-arrow"></div>
-                  <div class="popover-card-inner">你好，请问你是 xxx 吗？我在北京，现在短时间内回不去，所以，关于买房装修等事宜，等我回去再商量可以吗？</div>
+            <div class="search-chats" v-show="chatContext">
+              1条和“186”相关的搜索结果
+            </div>
+            <div class="search-chat-item-list" v-if="false">
+              <div
+                class="search-chat-item"
+                v-for="item in searchList"
+                :key="item.id"
+              >
+                <div class="user">
+                  <a-avatar shape="square" class="avatar">
+                    <template #icon><UserOutlined /></template>
+                  </a-avatar>
+                  <div class="ml8">
+                    <div class="user-name">{{ item.userName }}</div>
+                    <div class="chat-value" v-html="filterChatContext(item.content, chatContext)"></div>
+                  </div>
+                </div>
+                <div style="text-align: right;">
+                  <div>{{ item.createTime }}</div>
+                  <a-button type="link">查看上下文</a-button>
                 </div>
               </div>
             </div>
-            <div class="chat-item chat-item-right">
-              <a-avatar shape="square" class="avatar">
-                <template #icon><UserOutlined /></template>
-              </a-avatar>
-              <div>
-                <div class="chat-item-datetime">2024-03-14 14:22:03</div>
-                <div class="popover-card">
-                  <div class="popover-card-arrow"></div>
-                  <div class="popover-card-inner">OK</div>
+            <div class="chat-item-list" v-if="true">
+              <div
+                class="chat-item"
+                :class="{ 'chat-item-right': item.type === 'user' }"
+                v-for="item in chatList"
+                :key="item.id"
+              >
+                <a-avatar shape="square" class="avatar">
+                  <template #icon><UserOutlined /></template>
+                </a-avatar>
+                <div>
+                  <div class="chat-item-datetime">{{ item.createTime }}</div>
+                  <div class="popover-card">
+                    <div class="popover-card-arrow"></div>
+                    <div class="popover-card-inner">{{ item.content }}</div>
+                  </div>
                 </div>
               </div>
             </div>
+            <!-- <div>
+              <a-pagination v-model:current="pagination.current" :total="pagination.total" show-less-items />
+            </div> -->
           </div>
         </div>
       </div>
@@ -128,10 +151,29 @@ const list = ref<any[]>([])
 const selectUser = ref<string | number>('')
 const chatContext = ref<string>('')
 const contextType = ref<string>('1')
-for(let i = 0; i < 20; i++) {
+const searchList = ref<any[]>([])
+const chatList = ref<any[]>([])
+const pagination = ref<any>({
+  current: 1,
+  total: 1
+})
+
+for(let i = 0; i < 15; i++) {
   list.value.push({
     title: `秀儿 ${i}`,
     userId: i
+  })
+  searchList.value.push({
+    userName: `秀儿`,
+    id: i,
+    content: `你好，我是秀儿 ${i}, 186`,
+    createTime: '2024-03-14 14:22:03'
+  })
+  chatList.value.push({
+    id: i,
+    createTime: '2024-03-14 14:22:03',
+    content: `${i % 2 ? '你好，我是秀儿' : '你好，请问你是 xxx 吗？我在北京，现在短时间内回不去，所以，关于买房装修等事宜，等我回去再商量可以吗？'}`,
+    type: i % 2 ? 'user' : 'customer'
   })
 }
 const afterOpenChange = (bool: boolean) => {
@@ -139,6 +181,14 @@ const afterOpenChange = (bool: boolean) => {
 }
 const handleSelect = (userId: string | number) => {
   selectUser.value = userId
+}
+
+const filterChatContext = (chat: string, matchKey: string) => {
+  if (!matchKey) {  
+    return chat
+  }
+  const regex = new RegExp(matchKey, 'gi')
+  return chat.replace(regex, `<span style="color: #1677FF; font-weight: 500">${matchKey}</span>`)
 }
 </script>
 
@@ -207,12 +257,35 @@ const handleSelect = (userId: string | number) => {
     display: flex;
     flex-direction: column;
     flex: 1;
+    .search-chats {
+      border-bottom: 1px solid #e8e8e8;
+      padding-bottom: 4px;
+    }
     .chats {
       flex: 1;
       margin-top: 8px;
-      padding: 32px 16px;
+      padding: 8px 16px 32px 16px;
       overflow-y: scroll;
       border: 1px solid #e8e8e8;
+    }
+    .search-chat-item-list {
+      .search-chat-item {
+        padding: 8px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #e8e8e8;
+        .user {
+          display: flex;
+          align-items: center;
+          .chat-value {
+            font-weight: 500;
+          }
+        }
+      }
+    }
+    .chat-item-list {
+      margin-top: 24px;
     }
     .chat-item {
       display: flex;

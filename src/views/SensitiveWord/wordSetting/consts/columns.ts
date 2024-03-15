@@ -17,7 +17,7 @@ export const columns:Array<columnData> = [
   {
     title: '生效范围',
     dataIndex: 'rangeType',
-    customRender: (text: any) => {
+    customRender: ({ text }) => {
       return text === 0 ? '全部' : text === 1 ? '员工' : '客户';
     }
   },

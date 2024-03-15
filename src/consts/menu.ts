@@ -6,8 +6,14 @@ import {
   InboxOutlined,
   HomeOutlined
 } from '@ant-design/icons-vue';
-
-export const menus:any[] = [
+type menuType = {
+  key: string;
+  icon?: () => any;
+  label: string;
+  path?: string;
+  children?: menuType[];
+}
+export const menus: Array<menuType> = [
   {
     key: '1',
     icon: () => h(HomeOutlined),

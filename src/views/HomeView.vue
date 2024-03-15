@@ -32,11 +32,11 @@
             <span style="margin-left: 8px;">Admin ｜ 管理员</span>
           </a>
           <template #overlay>
-            <a-menu>
-              <a-menu-item>
+            <a-menu @click="handleMenuClick">
+              <a-menu-item key="password">
                 <a href="javascript:;">修改密码</a>
               </a-menu-item>
-              <a-menu-item>
+              <a-menu-item key="logout">
                 <a href="javascript:;">退出登录</a>
               </a-menu-item>
             </a-menu>
@@ -69,12 +69,14 @@
 </template>
 <script lang="ts" setup>
 import { getMenuList } from '@/apis/system/base';
+import { handleLoginout } from '@/apis/login';
+import { getUserInfo, setUserInfo, setToken } from '@/utils/local'
 import {
   UserOutlined,
   MenuFoldOutlined
 } from '@ant-design/icons-vue';
 import { menus } from '@/consts/menu'
-import type { TabsProps } from 'ant-design-vue';
+import { message, type TabsProps } from 'ant-design-vue';
 const mode = ref<TabsProps['tabPosition']>('top');
 const state = reactive({
   collapsed: false,
@@ -155,6 +157,20 @@ const toggleCollapsed = () => {
   state.collapsedWidth = state.collapsed ? '80px' : '256px'
 }
 
+const handleMenuClick = async (menu: any) => {
+  console.log(menu.key)
+  if (menu.key === 'logout') {
+    const res = await handleLoginout({})
+    if (res.code === 200) {
+      setToken('')
+      setUserInfo('')
+      router.push('/login')
+      return
+    }
+    message.error(res.msg)
+  }
+}
+
 onMounted(() => {
   /*
     menuId
@@ -164,7 +180,7 @@ onMounted(() => {
     path
     icon
   */
-  getMenuList({})
+  // getMenuList({})
 })
 </script>
 

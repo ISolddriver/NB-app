@@ -32,7 +32,7 @@ export function getColumns (type: string) {
     {
       title: '触发类型',
       dataIndex: 'type',
-      customRender: (text: any) => {
+      customRender: ({text}) => {
         return text === '1' ? '员工触发' : '客户触发'
       }
     },

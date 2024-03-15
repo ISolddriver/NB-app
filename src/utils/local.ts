@@ -22,3 +22,11 @@ export function setToken(value: string) {
 export function getToken() {
   return getLocalStorage('niubee-token');
 }
+
+export function setUserInfo(value: string) {
+  setLocalStorage('niubee-user-info', value);
+}
+
+export function getUserInfo() {
+  return getLocalStorage('niubee-user-info');
+}
