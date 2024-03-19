@@ -60,6 +60,7 @@
               style="width: 120px"
               class="mr8"
               allowClear
+              @change="handleSearch"
             />
             <a-select
               ref="select"
@@ -78,10 +79,12 @@
             </a-tooltip>
           </div>
           <div class="chats reset-scroll">
-            <div class="search-chats" v-show="chatContext">
-              1条和“186”相关的搜索结果
+            <div class="search-chats" v-show="showSearch">
+              <!-- v-show="chatContext" -->
+              <span>1条和“186”相关的搜索结果</span>
+              <CloseCircleOutlined style="cursor: pointer;" @click="handleCloseSearch" />
             </div>
-            <div class="search-chat-item-list" v-if="false">
+            <div class="search-chat-item-list" v-show="showSearch">
               <div
                 class="search-chat-item"
                 v-for="item in searchList"
@@ -101,8 +104,12 @@
                   <a-button type="link">查看上下文</a-button>
                 </div>
               </div>
+              <div class="list-bottom js-list-bottom-search">
+                <a-button v-show="loadingForSearchList" type="text" loading>加载中...</a-button>
+                <span v-show="!loadingForSearchList">----- 已经到底了 -----</span>
+              </div>
             </div>
-            <div class="chat-item-list" v-if="true">
+            <div class="chat-item-list" v-show="!showSearch">
               <div
                 class="chat-item"
                 :class="{ 'chat-item-right': item.type === 'user' }"
@@ -113,17 +120,19 @@
                   <template #icon><UserOutlined /></template>
                 </a-avatar>
                 <div>
-                  <div class="chat-item-datetime">{{ item.createTime }}</div>
+                  <div class="chat-item-datetime">
+                    {{ item.type === 'user' ? `${item.createTime} | ${item.userName}` : `${item.customerName} | ${item.createTime}` }}</div>
                   <div class="popover-card">
                     <div class="popover-card-arrow"></div>
                     <div class="popover-card-inner">{{ item.content }}</div>
                   </div>
                 </div>
               </div>
+              <div class="list-bottom js-list-bottom-chat">
+                <a-button v-show="loadingForChatList" type="text" loading>加载中...</a-button>
+                <span v-show="!loadingForChatList">----- 已经到底了 -----</span>
+              </div>
             </div>
-            <!-- <div>
-              <a-pagination v-model:current="pagination.current" :total="pagination.total" show-less-items />
-            </div> -->
           </div>
         </div>
       </div>
@@ -132,7 +141,12 @@
 </template>
 
 <script setup lang="ts">
-import { CheckCircleOutlined, UserOutlined, ExportOutlined } from '@ant-design/icons-vue'
+import { 
+  CheckCircleOutlined,
+  UserOutlined,
+  ExportOutlined,
+  CloseCircleOutlined
+} from '@ant-design/icons-vue'
 import type { Dayjs } from 'dayjs';
 type RangeValue = [Dayjs, Dayjs];
 defineProps({
@@ -157,6 +171,43 @@ const pagination = ref<any>({
   current: 1,
   total: 1
 })
+const showSearch = ref<boolean>(false)
+const loadingForChatList = ref<boolean>(false)
+const loadingForSearchList = ref<boolean>(false)
+
+const getChatList = () => {
+  loadingForChatList.value = true
+  setTimeout(() => {
+    loadingForChatList.value = false
+    chatList.value = [...chatList.value, ...chatList.value]
+  }, 5000)
+}
+const getSearchList = () => {
+  loadingForSearchList.value = true
+  setTimeout(() => {
+    loadingForSearchList.value = false
+    searchList.value = [...searchList.value, ...searchList.value]
+  }, 5000)
+}
+
+const intersectionObserver = new IntersectionObserver((entries) => {
+  if(entries[0].intersectionRatio && !loadingForChatList.value) {
+    getChatList()
+  }
+}, { rootMargin: '10px 0px 0px 0px' })
+const intersectionObserverSearch = new IntersectionObserver((entries) => {
+  if(entries[0].intersectionRatio && !loadingForSearchList.value) {
+    getSearchList()
+  }
+}, { rootMargin: '10px 0px 0px 0px' })
+onMounted(() => {
+  intersectionObserver.observe(document.querySelector('.js-list-bottom-chat'))
+})
+
+onUnmounted(() => {
+  intersectionObserver.disconnect()
+  intersectionObserverSearch.disconnect()
+})
 
 for(let i = 0; i < 15; i++) {
   list.value.push({
@@ -173,11 +224,13 @@ for(let i = 0; i < 15; i++) {
     id: i,
     createTime: '2024-03-14 14:22:03',
     content: `${i % 2 ? '你好，我是秀儿' : '你好，请问你是 xxx 吗？我在北京，现在短时间内回不去，所以，关于买房装修等事宜，等我回去再商量可以吗？'}`,
-    type: i % 2 ? 'user' : 'customer'
+    type: i % 2 ? 'user' : 'customer',
+    userName: 'jovi',
+    customerName: '秀儿'
   })
 }
 const afterOpenChange = (bool: boolean) => {
-  console.log(bool)
+  // console.log(bool)
 }
 const handleSelect = (userId: string | number) => {
   selectUser.value = userId
@@ -189,6 +242,17 @@ const filterChatContext = (chat: string, matchKey: string) => {
   }
   const regex = new RegExp(matchKey, 'gi')
   return chat.replace(regex, `<span style="color: #1677FF; font-weight: 500">${matchKey}</span>`)
+}
+
+const handleSearch = (val: string) => {
+  showSearch.value = true
+  nextTick(() => {
+    intersectionObserverSearch.observe(document.querySelector('.js-list-bottom-search'))
+  })
+}
+const handleCloseSearch = () => {
+  showSearch.value = false
+  chatContext.value = ''
 }
 </script>
 
@@ -260,6 +324,9 @@ const filterChatContext = (chat: string, matchKey: string) => {
     .search-chats {
       border-bottom: 1px solid #e8e8e8;
       padding-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     .chats {
       flex: 1;
@@ -267,6 +334,12 @@ const filterChatContext = (chat: string, matchKey: string) => {
       padding: 8px 16px 32px 16px;
       overflow-y: scroll;
       border: 1px solid #e8e8e8;
+    }
+    .list-bottom {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .search-chat-item-list {
       .search-chat-item {
@@ -290,7 +363,7 @@ const filterChatContext = (chat: string, matchKey: string) => {
     .chat-item {
       display: flex;
       align-items: center;
-      margin-bottom: 32px;
+      margin-bottom: 36px;
       position: relative;
       .avatar {
         margin-right: 20px;
@@ -321,7 +394,7 @@ const filterChatContext = (chat: string, matchKey: string) => {
       }
       .chat-item-datetime {
         left: auto;
-        right: 70px;
+        right: 60px;
       }
     }
   }

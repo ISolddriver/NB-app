@@ -1,5 +1,3 @@
-
-import type { handleLogin } from '@/apis/login';
 <template>
   <div class="base-card query">
     <a-input style="width: 240px" v-model:value="query.roleName" placeholder="请输入角色名称" />

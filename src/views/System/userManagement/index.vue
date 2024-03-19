@@ -1,5 +1,4 @@
 
-import type { handleLogin } from '@/apis/login';
 <template>
   <div class="base-card query">
     <a-input style="width: 240px" v-model:value="query.username" placeholder="请输入用户名或账号" />
