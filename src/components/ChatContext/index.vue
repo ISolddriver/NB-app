@@ -8,7 +8,7 @@
       width="1000px"
     >
       <div class="layout">
-        <div class="list">
+        <div class="list" v-if="showList">
           <a-radio-group v-model:value="listType" size="small" class="mb8">
             <a-radio-button value="1">外部好友</a-radio-button>
             <a-radio-button value="2">内部好友</a-radio-button>
@@ -45,7 +45,7 @@
                     </a-avatar>
                     {{ item.title }}
                   </p>
-                  <CheckCircleOutlined :class="{ 'active-icon' : item.userId === selectUser }" />
+                  <CheckCircleOutlined class="active-icon" v-show="item.userId === selectUser" />
                 </a-list-item>
               </template>
             </a-list>
@@ -78,7 +78,7 @@
               </a-button>
             </a-tooltip>
           </div>
-          <div class="chats reset-scroll">
+          <div class="chats reset-scroll" ref="chats">
             <div class="search-chats" v-show="showSearch">
               <!-- v-show="chatContext" -->
               <span>1条和“186”相关的搜索结果</span>
@@ -153,9 +153,14 @@ defineProps({
   title: {
     type: String,
     default: '会话内容'
+  },
+  showList: {
+    type: Boolean,
+    default: true
   }
 })
 
+const chats = ref()
 const open = ref<boolean>(true)
 const listType = ref<string>('1')
 const searchType = ref<string>('1')
@@ -167,10 +172,7 @@ const chatContext = ref<string>('')
 const contextType = ref<string>('1')
 const searchList = ref<any[]>([])
 const chatList = ref<any[]>([])
-const pagination = ref<any>({
-  current: 1,
-  total: 1
-})
+
 const showSearch = ref<boolean>(false)
 const loadingForChatList = ref<boolean>(false)
 const loadingForSearchList = ref<boolean>(false)
@@ -202,6 +204,7 @@ const intersectionObserverSearch = new IntersectionObserver((entries) => {
 }, { rootMargin: '10px 0px 0px 0px' })
 onMounted(() => {
   intersectionObserver.observe(document.querySelector('.js-list-bottom-chat'))
+  chats.value.scrollTop = 0
 })
 
 onUnmounted(() => {
@@ -246,6 +249,7 @@ const filterChatContext = (chat: string, matchKey: string) => {
 
 const handleSearch = (val: string) => {
   showSearch.value = true
+  chats.value.scrollTop = 0
   nextTick(() => {
     intersectionObserverSearch.observe(document.querySelector('.js-list-bottom-search'))
   })

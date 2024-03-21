@@ -9,29 +9,49 @@
         @change="onRangeChange"
       />
     </div>
-    <div class="chat-data">
-      <div class="title">单聊数据</div>
-      <div class="items">
-        <div class="item" v-for="(item, index) in chatData" :key="index">
-          <component class="icon" :is="item.icon"></component>
-          <div class="context">
-            <p class="title">{{ item.name }}</p>
-            <p class="count">{{ item.value }}</p>
-          </div>
-        </div>
-      </div>
+    <!-- <p>单聊数据</p> -->
+    <div style="background-color: #f0f2f5; padding: 20px" class="mb16">
+      <a-row :gutter="[16, 16]">
+        <a-col :span="6" v-for="(item, index) in chatData" :key="index">
+          <a-card :bordered="false">
+            <!-- <a-card-meta>
+              <template #avatar>
+                <a-avatar :size="40">CHAT</a-avatar>
+              </template>
+            </a-card-meta> -->
+            <a-statistic
+              :title="item.name"
+              :value="item.value"
+              :precision="2"
+              :value-style="{ color: '#3f8600' }"
+            >
+              <template #prefix>
+                <!-- <arrow-down-outlined /> -->
+              </template>
+            </a-statistic>
+          </a-card>
+        </a-col>
+      </a-row>
     </div>
-    <div class="chat-data">
-      <div class="title">群聊数据</div>
-      <div class="items">
-        <div class="item" v-for="(item, index) in chatData" :key="index">
-          <component class="icon" :is="item.icon"></component>
-          <div class="context">
-            <p class="title">{{ item.name }}</p>
-            <p class="count">{{ item.value }}</p>
-          </div>
-        </div>
-      </div>
+    <!-- <p>群聊数据</p> -->
+    <div style="background-color: #f0f2f5; padding: 20px">
+      <a-row :gutter="[16, 16]">
+        <a-col :span="6" v-for="(item, index) in chatGroupData" :key="index">
+          <a-card :bordered="false">
+            <a-statistic
+              :title="item.name"
+              :value="item.value"
+              :precision="2"
+              :value-style="{ color: '#3f8600' }"
+            >
+              <template #prefix>
+                <!-- <arrow-down-outlined /> -->
+                <!-- <arrow-up-outlined /> -->
+              </template>
+            </a-statistic>
+          </a-card>
+        </a-col>
+      </a-row>
     </div>
   </div>
 </template>
@@ -39,7 +59,7 @@
 <script lang="ts" setup>
 import dayjs, { Dayjs } from 'dayjs';
 import { ref, h } from 'vue';
-import { CommentOutlined } from '@ant-design/icons-vue';
+import { CommentOutlined, ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons-vue';
 type RangeValue = [Dayjs, Dayjs];
 
 const rangePresets = ref([
@@ -61,21 +81,43 @@ const onRangeChange = (dates: RangeValue, dateStrings: string[]) => {
 const chatData = ref([
   {
     name: '单聊总数',
-    value: 0,
+    value: '0',
     icon: () => h(CommentOutlined)
   },
   {
     name: '发送消息数',
-    value: 0,
+    value: '0',
     icon: () => h(CommentOutlined)
   },
   {
     name: '新增客户数',
-    value: 0,
+    value: '0',
     icon: () => h(CommentOutlined)
   },
   {
     name: '平均首次回复时长',
+    value: '00:00:00',
+    icon: () => h(CommentOutlined)
+  }
+])
+const chatGroupData = ref([
+  {
+    name: '群聊总数',
+    value: '0',
+    icon: () => h(CommentOutlined)
+  },
+  {
+    name: '日活群聊数',
+    value: '0',
+    icon: () => h(CommentOutlined)
+  },
+  {
+    name: '群成员总数',
+    value: '0',
+    icon: () => h(CommentOutlined)
+  },
+  {
+    name: '群消息总数',
     value: '00:00:00',
     icon: () => h(CommentOutlined)
   }

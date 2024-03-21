@@ -98,6 +98,14 @@ export class Request {
   ): Promise<Result<T>> {
     return this.instance.post(url, data, config);
   }
+  
+  public delete<T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<Result<T>> {
+    return this.instance.delete(url, data, config);
+  }
 }
 
 // 默认导出Request实例
