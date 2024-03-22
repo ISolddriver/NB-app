@@ -1,5 +1,6 @@
 export function useFetchList (fun: any, query: any) {
   const queryDataFun = fun
+  console.log(fun)
   let pagination = reactive({
     total: 0,
     current: 1,

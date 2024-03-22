@@ -7,30 +7,32 @@
   </div>
   <div class="base-card query">
     <a-range-picker v-model:value="dateTime" format="YYYY-MM-DD" :presets="rangePresets" />
-    <a-button style="margin-left: 16px" type="primary" @click="handleSearch">查询</a-button>
+    <a-button style="margin-left: 16px" type="primary" @click="handleSearchList">查询</a-button>
   </div>
   <div class="tables">
     <div class="table-item mr8">
       <p class="title">成员触发排行</p>
       <a-table
+        ref="userTable"
         :columns="userColumns"
-        :data-source="tableConfig.tableData"
+        :data-source="userTableData"
         bordered
-        :pagination="tableConfig.pagination"
-        :loading="tableConfig.loading"
-        @change="tableConfig.handleTableChange"
+        :pagination="paginationUser"
+        :loading="loadingUser"
+        @change="handleTableChangeUser"
       >
       </a-table>
     </div>
     <div class="table-item">
       <p class="title">客户触发排行</p>
       <a-table
+        ref="customerTable"
         :columns="customerColumns"
-        :data-source="tableCustomerConfig.tableData"
+        :data-source="tableDataCustomer"
         bordered
-        :pagination="tableCustomerConfig.pagination"
-        :loading="tableCustomerConfig.loading"
-        @change="tableCustomerConfig.handleTableChange"
+        :pagination="paginationCustomer"
+        :loading="loadingCustomer"
+        @change="handleTableChangeCustomer"
       >
       </a-table>
     </div>
@@ -38,8 +40,8 @@
 </template>
 <script setup lang="ts">
 import { useFetchList } from '@/hooks/table/useFetchList'
+import { getSingleUserRank, getSingleCustomerRank, getGroupUserRank, getGroupCustomerRank } from '@/apis/statistics/sensitive'
 import dayjs, { Dayjs } from 'dayjs'
-import { getSingleUserRank, getSingleCustomerRank } from '@/apis/statistics/sensitive'
 
 type RangeValue = [Dayjs, Dayjs];
 const dateTime = ref<RangeValue>();
@@ -57,21 +59,45 @@ const customerColumns = [
   { title: '客户名', dataIndex: 'customerName' },
 ]
 const type = ref('1')
+const urlMap = {
+  '1': {
+    'user': getSingleUserRank,
+    'customer': getSingleCustomerRank
+  },
+  '2': {
+    'user': getGroupUserRank,
+    'customer': getGroupCustomerRank
+  }
+}
 const query = reactive({
   beginTime: '',
   endTime: '',
 })
-let tableConfig = reactive(useFetchList(getSingleUserRank, query))
-let tableCustomerConfig = reactive(useFetchList(getSingleCustomerRank, query))
-console.log(tableConfig, '111', tableCustomerConfig)
-onMounted(() => {
-  tableConfig.handleSeach()
-  // tableCustomerConfig.handleSearch()
-})
-const handleSearch = () => {
-  tableConfig.handleSearch()
-  // tableCustomerConfig.handleSearch()
+
+let {
+  tableData: userTableData,
+  handleSeach: handleSeachUser,
+  handleTableChange: handleTableChangeUser,
+  pagination: paginationUser,
+  loading: loadingUser
+} = useFetchList(() => urlMap[type.value].user, query)
+
+let {
+  tableData: tableDataCustomer,
+  handleSeach: handleSeachCustomer,
+  handleTableChange: handleTableChangeCustomer,
+  pagination: paginationCustomer,
+  loading: loadingCustomer
+} = useFetchList(() => urlMap[type.value].customer, query)
+
+const handleSearchList = () => {
+  handleSeachCustomer()
+  handleSeachUser()
 }
+
+onMounted(() => {
+  handleSearchList()
+})
 
 
 </script>
