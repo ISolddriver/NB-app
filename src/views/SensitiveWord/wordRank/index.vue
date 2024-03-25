@@ -6,7 +6,7 @@
     </a-radio-group>
   </div>
   <div class="base-card query">
-    <a-range-picker v-model:value="dateTime" format="YYYY-MM-DD" :presets="rangePresets" />
+    <a-range-picker v-model:value="dateTime" format="YYYY-MM-DD" :presets="rangePresets" @change="handleDateChange"/>
     <a-button style="margin-left: 16px" type="primary" @click="handleSearchList">查询</a-button>
   </div>
   <div class="tables">
@@ -15,11 +15,11 @@
       <a-table
         ref="userTable"
         :columns="userColumns"
-        :data-source="userTableData"
+        :data-source="userTableConfig.tableData"
         bordered
-        :pagination="paginationUser"
-        :loading="loadingUser"
-        @change="handleTableChangeUser"
+        :pagination="userTableConfig.pagination"
+        :loading="userTableConfig.loading"
+        @change="userTableConfig.handleTableChange"
       >
       </a-table>
     </div>
@@ -28,11 +28,11 @@
       <a-table
         ref="customerTable"
         :columns="customerColumns"
-        :data-source="tableDataCustomer"
+        :data-source="customerTableConfig.tableData"
         bordered
-        :pagination="paginationCustomer"
-        :loading="loadingCustomer"
-        @change="handleTableChangeCustomer"
+        :pagination="customerTableConfig.pagination"
+        :loading="customerTableConfig.loading"
+        @change="customerTableConfig.handleTableChange"
       >
       </a-table>
     </div>
@@ -44,7 +44,7 @@ import { getSingleUserRank, getSingleCustomerRank, getGroupUserRank, getGroupCus
 import dayjs, { Dayjs } from 'dayjs'
 
 type RangeValue = [Dayjs, Dayjs];
-const dateTime = ref<RangeValue>();
+let dateTime = ref<RangeValue>();
 const rangePresets = ref([
   { label: '今日', value: [dayjs(), dayjs()] },
   { label: '本周', value: [dayjs().startOf('week'), dayjs().endOf('week')] },
@@ -69,35 +69,44 @@ const urlMap = {
     'customer': getGroupCustomerRank
   }
 }
+let userUrl = reactive(urlMap[type.value].user)
+let customerUrl = reactive(urlMap[type.value].customer)
 const query = reactive({
   beginTime: '',
   endTime: '',
 })
 
-let {
-  tableData: userTableData,
-  handleSeach: handleSeachUser,
-  handleTableChange: handleTableChangeUser,
-  pagination: paginationUser,
-  loading: loadingUser
-} = useFetchList(() => urlMap[type.value].user, query)
-
-let {
-  tableData: tableDataCustomer,
-  handleSeach: handleSeachCustomer,
-  handleTableChange: handleTableChangeCustomer,
-  pagination: paginationCustomer,
-  loading: loadingCustomer
-} = useFetchList(() => urlMap[type.value].customer, query)
+let userTableConfig = reactive(useFetchList(userUrl, query))
+let customerTableConfig = reactive(useFetchList(customerUrl, query))
 
 const handleSearchList = () => {
-  handleSeachCustomer()
-  handleSeachUser()
+  customerTableConfig.handleSeach()
+  userTableConfig.handleSeach()
 }
 
 onMounted(() => {
   handleSearchList()
 })
+
+watch(type, (value) => {
+  query.beginTime = ''
+  query.endTime = ''
+  dateTime = ref<RangeValue>();
+  userUrl = urlMap[value].user
+  customerUrl = urlMap[value].customer
+  userTableConfig = reactive(useFetchList(userUrl, query))
+  customerTableConfig = reactive(useFetchList(customerUrl, query))
+  handleSearchList()
+})
+const handleDateChange = (dates: any[], dateStrings: string[]) => {
+  if (dateStrings) {
+    query.beginTime = dateStrings[0]
+    query.endTime = dateStrings[1]
+  } else {
+    query.beginTime = ''
+    query.endTime = ''
+  }
+}
 
 
 </script>

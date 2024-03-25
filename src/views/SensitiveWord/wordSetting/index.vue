@@ -1,5 +1,5 @@
 <template>
-  <div class="base-card query">
+  <div class="base-card query mb8">
     <a-input placeholder="请输入规则名称" v-model:value="query.name" style="width: 160px;" class="mr8" />
     <a-input placeholder="请输入敏感词" v-model:value="query.words" style="width: 200px;" class="mr8" />
     <a-input placeholder="请输入生效成员" v-model:value="query.userName" style="width: 200px;" class="mr8" />

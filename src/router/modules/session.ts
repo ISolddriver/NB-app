@@ -43,7 +43,7 @@ export const sessionRoutes = [
     path: '/timeoutRank',
     name: 'timeoutRank',
     meta: {
-      title: '聊天超时记录'
+      title: '超时排行'
     },
     component: () => import('@/views/SessionArchiving/timeoutRank/index.vue')
   },
@@ -51,7 +51,7 @@ export const sessionRoutes = [
     path: '/timeoutStatistics',
     name: 'timeoutStatistics',
     meta: {
-      title: '超时设置'
+      title: '超时统计'
     },
     component: () => import('@/views/SessionArchiving/timeoutStatistics/index.vue')
   }

@@ -180,7 +180,7 @@ onMounted(() => {
     path
     icon
   */
-  // getMenuList({})
+  getMenuList({})
 })
 </script>
 
