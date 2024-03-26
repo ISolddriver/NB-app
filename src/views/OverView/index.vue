@@ -57,6 +57,7 @@
 </template>
 
 <script lang="ts" setup>
+import locale from 'ant-design-vue/es/date-picker/locale/zh_CN';
 import dayjs, { Dayjs } from 'dayjs';
 import { ref, h } from 'vue';
 import { CommentOutlined, ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons-vue';
