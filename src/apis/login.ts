@@ -1,13 +1,21 @@
 import Request from "@/utils/axios";
 
 export function handleLogin (data: any) {
-  return Request.post('/auth/login', data)
+  return Request.post('/auth/v1/login', data)
 }
 
 export function handleLoginout (data: any) {
-  return Request.get('/auth/logout', data)
+  return Request.get('/auth/v1/logout', data)
 }
 
 export function getImgLocation (data: any) {
-  return Request.get('/captcha/getCutImage', data)
+  return Request.get('/captcha/v1/getCutImage', { responseType: 'arraybuffer' })
+}
+
+export function getVerifyImage (data: any) {
+  return Request.get('/captcha/v1/verifyImage', { responseType: 'arraybuffer' })
+}
+
+export function getSrcImage (data: any) {
+  return Request.get('/captcha/v1/getSrcImage', { responseType: 'arraybuffer' })
 }

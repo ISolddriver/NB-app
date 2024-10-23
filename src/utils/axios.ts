@@ -8,8 +8,7 @@ type Result<T> = {
   msg: string;
   data: T;
 };
-const baseURL = "http://10.168.9.66:8080";
-
+const baseURL = "http://59.110.143.217/och-api";
 // 导出Request类，可以用来自定义传递配置来创建实例
 export class Request {
   // axios 实例
@@ -20,9 +19,8 @@ export class Request {
   constructor(config: AxiosRequestConfig) {
     // 使用axios.create创建axios实例
     this.instance = axios.create(Object.assign(this.baseConfig, config));
-
     this.instance.interceptors.request.use(
-      (config: AxiosRequestConfig) => {
+      (config) => {
         // 一般会请求拦截里面加token，用于后端的验证
         const token = getToken()
         if(token) {
@@ -85,11 +83,11 @@ export class Request {
 
   public get<T = any>(
     url: string,
+    data?: any,
     config?: AxiosRequestConfig
   ): Promise<Result<T>> {
     return this.instance.get(url, config);
   }
-  // TODO Promise<AxiosResponse<Result<T>>>
 
   public post<T = any>(
     url: string,
@@ -101,10 +99,9 @@ export class Request {
   
   public delete<T = any>(
     url: string,
-    data?: any,
     config?: AxiosRequestConfig
   ): Promise<Result<T>> {
-    return this.instance.delete(url, data, config);
+    return this.instance.delete(url, config);
   }
 }
 

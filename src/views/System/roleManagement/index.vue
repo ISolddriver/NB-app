@@ -166,7 +166,7 @@ const handleDelete = async (roleId: string | number) => {
   const res = await deleteRole({ roleId })
   if (res.code === 200) {
     message.success('删除成功')
-    handleSeach({ current: 1, pageSize: 10 })
+    handleSeach()
     return
   }
   message.error('删除失败')
@@ -182,15 +182,12 @@ const handleSubmit = () => {
       if (res.code === 200) {
         message.success('操作成功！')
         closeDrawer()
-        handleSeach({
-          current: 1,
-          pageSize: 10
-        })
+        handleSeach()
         return
       }
       message.error('操作失败！')
     })
-    .catch(error => {
+    .catch((error: any)=> {
       console.log('error', error);
     });
 }

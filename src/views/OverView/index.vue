@@ -57,27 +57,27 @@
 </template>
 
 <script lang="ts" setup>
-import locale from 'ant-design-vue/es/date-picker/locale/zh_CN';
-import dayjs, { Dayjs } from 'dayjs';
-import { ref, h } from 'vue';
-import { CommentOutlined, ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons-vue';
-type RangeValue = [Dayjs, Dayjs];
+import locale from 'ant-design-vue/es/date-picker/locale/zh_CN'
+import dayjs, { Dayjs } from 'dayjs'
+import { ref, h } from 'vue'
+import { CommentOutlined, ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons-vue'
+type RangeValue = [Dayjs, Dayjs]
 
 const rangePresets = ref([
   { label: '前7天', value: [dayjs().add(-7, 'd'), dayjs()] },
   { label: '前14天', value: [dayjs().add(-14, 'd'), dayjs()] },
   { label: '前30天', value: [dayjs().add(-30, 'd'), dayjs()] },
-  { label: '前90天', value: [dayjs().add(-90, 'd'), dayjs()] },
-]);
+  { label: '前90天', value: [dayjs().add(-90, 'd'), dayjs()] }
+])
 
 const onRangeChange = (dates: RangeValue, dateStrings: string[]) => {
   if (dates) {
-    console.log('From: ', dates[0], ', to: ', dates[1]);
-    console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
+    console.log('From: ', dates[0], ', to: ', dates[1])
+    console.log('From: ', dateStrings[0], ', to: ', dateStrings[1])
   } else {
-    console.log('Clear');
+    console.log('Clear')
   }
-};
+}
 
 const chatData = ref([
   {
@@ -126,52 +126,52 @@ const chatGroupData = ref([
 </script>
 
 <style scoped lang="less">
-  @base-padding: 16px 0;
-  .over-view {
-    .top {
-      padding: @base-padding;
-      border-bottom: 1px solid #e8e8e8;
+@base-padding: 16px 0;
+.over-view {
+  .top {
+    padding: @base-padding;
+    border-bottom: 1px solid #e8e8e8;
+  }
+  .chat-data {
+    padding: @base-padding;
+    &:first-child {
+      padding: 16px 0 0 0;
     }
-    .chat-data {
-      padding: @base-padding;
-      &:first-child {
-        padding: 16px 0 0 0;
-      }
-      .title {
-        font-weight: 600;
-        font-size: 16px;
-        margin-bottom: 8px;
-      }
-      .items {
+    .title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .items {
+      display: flex;
+      justify-content: space-between;
+      .item {
+        padding: 16px;
         display: flex;
-        justify-content: space-between;
-        .item {
-          padding: 16px;
-          display: flex;
-          background: #f8f9fb;
-          border-radius: 6px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          flex: 1;
-          margin-right:16px;
-          &:last-child {
-            margin-right: 0;
+        background: #f8f9fb;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        flex: 1;
+        margin-right: 16px;
+        &:last-child {
+          margin-right: 0;
+        }
+        .icon {
+          font-size: 26px;
+          margin-right: 14px;
+        }
+        .context {
+          font-size: 16px;
+          .title {
+            font-weight: 600;
           }
-          .icon {
-            font-size: 26px;
-            margin-right: 14px;
-          }
-          .context {
-            font-size: 16px;
-            .title {
-              font-weight: 600;
-            }
-            .count {
-              color: #3366ff;
-              font-weight: 600;
-            }
+          .count {
+            color: #3366ff;
+            font-weight: 600;
           }
         }
       }
     }
   }
+}
 </style>
