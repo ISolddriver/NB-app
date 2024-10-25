@@ -1,4 +1,3 @@
-
 <template>
   <div class="base-card query">
     <a-input style="width: 240px" v-model:value="query.username" placeholder="请输入用户名或账号" />
@@ -16,14 +15,21 @@
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'status'">
-          <a-switch v-model:checked="record.status" :checkedValue="1" :unCheckedValue="2"  @change="handleIsOpenChange" />
+          <a-switch
+            v-model:checked="record.status"
+            :checkedValue="1"
+            :unCheckedValue="2"
+            @change="handleIsOpenChange"
+          />
         </template>
         <template v-if="column.dataIndex === 'roleName'">
-          <span>{{ record.roleInfo.map(i => i.roleName).join(',') }}</span>
+          <span>{{ record.roleInfo.map((i: any) => i.roleName).join(',') }}</span>
         </template>
         <template v-if="column.dataIndex === 'operate'">
           <a-button @click="handleEdit(record)" type="link"><FormOutlined />编辑</a-button>
-          <a-button @click="handleDelete(record.userId)" type="link"><DeleteOutlined />删除</a-button>
+          <a-button @click="handleDelete(record.userId)" type="link"
+            ><DeleteOutlined />删除</a-button
+          >
         </template>
       </template>
     </a-table>
@@ -61,11 +67,7 @@
           <a-input v-model:value="formState.userName" />
         </a-form-item>
 
-        <a-form-item
-          label="密码"
-          name="password"
-          v-if="!formState.userId"
-        >
+        <a-form-item label="密码" name="password" v-if="!formState.userId">
           <a-input-password v-model:value="formState.password" />
         </a-form-item>
 
@@ -84,60 +86,65 @@
           placeholder="请选择角色"
         >
           <a-select v-model:value="formState.roleIds" mode="multiple">
-            <a-select-option v-for="item in roleList" :key="item.roleId" :value="item.roleId">{{ item.roleName }}</a-select-option>
+            <a-select-option v-for="item in roleList" :key="item.roleId" :value="item.roleId">{{
+              item.roleName
+            }}</a-select-option>
           </a-select>
         </a-form-item>
       </a-form>
       <template #footer>
-        <a-button key="back" style="margin-right: 16px;" @click="closeDrawer">取消</a-button>
+        <a-button key="back" style="margin-right: 16px" @click="closeDrawer">取消</a-button>
         <a-button key="submit" type="primary" @click="handleSubmit">提交</a-button>
       </template>
     </a-drawer>
   </div>
 </template>
 <script setup lang="ts">
-import type { Rule } from 'ant-design-vue/es/form';
-import { FormOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue';
-import { message } from 'ant-design-vue';
+import type { Rule } from 'ant-design-vue/es/form'
+import { FormOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
 import { getList, addUser, deleteUser, editUser, getRoleList } from '@/apis/system/user'
 import { useFetchList } from '@/hooks/table/useFetchList'
 import { columns } from './consts/tableColumns'
 
 const query = reactive({
-  username: '' 
+  username: ''
 })
-const { tableData, handleSeach, handleTableChange, pagination, loading } = useFetchList(getList, query)
+const { tableData, handleSeach, handleTableChange, pagination, loading } = useFetchList(
+  getList,
+  query
+)
 onMounted(() => {
   handleSeach()
 })
 
-let roleList = ref<any[]>([]);
+let roleList = ref<any[]>([])
 const handleIsOpenChange = (value: any) => {
-  console.log(`selected ${value}`);
+  console.log(`selected ${value}`)
 }
 let open = ref<boolean>(false)
 let drawTitle = ref<string>('新增用户')
 const formRef = ref()
 const validatePass = async (_rule: Rule, value: string) => {
   if (value === '') {
-    return Promise.reject('请输入密码');
+    return Promise.reject('请输入密码')
   } else {
     const result = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?#^()_/~&]).{8,20}$/.test(value)
     if (result) {
-      return Promise.resolve();
+      return Promise.resolve()
     }
-    return Promise.reject('请按照规则输入密码');
+    return Promise.reject('请按照规则输入密码')
   }
-};
+}
 const rules: Record<string, Rule[]> = {
   password: [{ required: true, validator: validatePass, trigger: 'change' }]
-};
+}
 interface FormState {
   nickName: string
   password: string
   userName: string
-  roleIds: Array<any>,
-  corpUserId: string,
+  roleIds: Array<any>
+  corpUserId: string
   userId?: string | number
 }
 let formState = reactive<FormState>({
@@ -149,7 +156,6 @@ let formState = reactive<FormState>({
   userId: ''
 })
 
-
 const handleAdd = () => {
   drawTitle.value = '新增用户'
   open.value = true
@@ -158,7 +164,8 @@ const handleDelete = async (userId: string | number) => {
   const res = await deleteUser({ userId })
   if (res.code === 200) {
     message.success('删除成功')
-    handleSeach({ current: 1, pageSize: 10 })
+    // { current: 1, pageSize: 10 }
+    handleSeach()
     return
   }
   message.error('删除失败')
@@ -170,7 +177,7 @@ const handleEdit = (record: any) => {
     nickName: record.nickName,
     password: record.password,
     userName: record.userName,
-    roleIds: record.roleInfo.map(i => i.roleId),
+    roleIds: record.roleInfo.map((i: any) => i.roleId),
     corpUserId: record.corpUserId,
     userId: record.userId
   }
@@ -180,7 +187,7 @@ const handleSubmit = () => {
   formRef.value
     .validate()
     .then(async () => {
-      console.log('values', formState);
+      console.log('values', formState)
       const fn = formState.userId ? editUser : addUser
       const res = await fn({
         ...formState
@@ -188,17 +195,14 @@ const handleSubmit = () => {
       if (res.code === 200) {
         message.success('操作成功！')
         closeDrawer()
-        handleSeach({
-          current: 1,
-          pageSize: 10
-        })
+        handleSeach({ current: 1, pageSize: 10 })
         return
       }
       message.error('操作失败！')
     })
-    .catch(error => {
-      console.log('error', error);
-    });
+    .catch(() => {
+      console.log('error')
+    })
 }
 const closeDrawer = () => {
   formRef.value.resetFields()
@@ -219,7 +223,6 @@ watch(open, async (val) => {
     roleList.value = res.data.list
   }
 })
-
 </script>
 <style scoped lang="less">
 .query {
@@ -234,4 +237,4 @@ th.column-money,
 td.column-money {
   text-align: right !important;
 }
-</style>@/hooks/list/useFetchList@/hooks/table/useFetchList
+</style>

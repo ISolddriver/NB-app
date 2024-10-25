@@ -8,12 +8,13 @@ export function useFetchList (fun: any, query: any) {
   })
   const tableData = ref<any[]>([])
   const loading = ref(false)
-  const handleSeach = async () => {
+  const handleSeach = async (info?: any) => {
     loading.value = true
     queryDataFun({
       ...query,
       pageNum: pagination.current,
-      pageSize: pagination.pageSize
+      pageSize: pagination.pageSize,
+      ...info
     }).then((res: any) => {
       loading.value = false
       tableData.value = res.data.list

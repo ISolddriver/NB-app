@@ -3,6 +3,8 @@ import HomeView from '../views/HomeView.vue'
 import { systemRoutes } from './modules/system'
 import { sessionRoutes } from './modules/session'
 import { sensitiveWordRoutes } from './modules/sensitiveWord'
+import { callingConfigureRoutes } from './modules/callingConfigure'
+import { fsConfigureRoutes } from './modules/fsConfigure'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,7 +32,9 @@ const router = createRouter({
         },
         ...systemRoutes,
         ...sessionRoutes,
-        ...sensitiveWordRoutes
+        ...sensitiveWordRoutes,
+        ...callingConfigureRoutes,
+        ...fsConfigureRoutes
       ]
     }
   ]
