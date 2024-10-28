@@ -110,7 +110,7 @@ import { columns } from './consts/tableColumns'
 const query = reactive({
   username: ''
 })
-const { tableData, handleSeach, handleTableChange, pagination, loading } = useFetchList(
+const { tableData, handleSeach, initTable, handleTableChange, pagination, loading } = useFetchList(
   getList,
   query
 )
@@ -164,7 +164,6 @@ const handleDelete = async (userId: string | number) => {
   const res = await deleteUser({ userId })
   if (res.code === 200) {
     message.success('删除成功')
-    // { current: 1, pageSize: 10 }
     handleSeach()
     return
   }
@@ -195,7 +194,7 @@ const handleSubmit = () => {
       if (res.code === 200) {
         message.success('操作成功！')
         closeDrawer()
-        handleSeach({ current: 1, pageSize: 10 })
+        formState.userId ? handleSeach() : initTable()
         return
       }
       message.error('操作失败！')

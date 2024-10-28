@@ -16,7 +16,9 @@
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'operate'">
           <a-button type="link" @click="handleEdit(record)"><FormOutlined />编辑</a-button>
-          <a-button type="link" @click="handleDelete(record.roleId)"><DeleteOutlined />删除</a-button>
+          <a-button type="link" @click="handleDelete(record.roleId)"
+            ><DeleteOutlined />删除</a-button
+          >
         </template>
       </template>
     </a-table>
@@ -42,13 +44,9 @@
           name="roleName"
           :rules="[{ required: true, message: '请输入角色名!' }]"
         >
-          <a-input v-model:value="formState.roleName" show-count :maxlength="15"/>
+          <a-input v-model:value="formState.roleName" show-count :maxlength="15" />
         </a-form-item>
-        <a-form-item
-          label="权限描述"
-          name="roleKey"
-          :rules="[{ required: true }]"
-        >
+        <a-form-item label="权限描述" name="roleKey" :rules="[{ required: true }]">
           <a-radio-group v-model:value="formState.roleKey">
             <a-radio value="ROLE_MEMBER">普通角色</a-radio>
             <a-radio value="ROLE_ADMIN">管理员角色</a-radio>
@@ -71,7 +69,7 @@
           name="roleSort"
           :rules="[{ required: true, message: '请输入角色顺序!' }]"
         >
-          <a-input-number :min="0" v-model:value="formState.roleSort"/>
+          <a-input-number :min="0" v-model:value="formState.roleSort" />
         </a-form-item>
         <a-form-item
           label="权限描述"
@@ -81,10 +79,7 @@
           <a-textarea v-model:value="formState.remark" :rows="4" show-count :maxlength="50" />
         </a-form-item>
 
-        <a-form-item
-          label="分配权限"
-          name="menuIds"
-        >
+        <a-form-item label="分配权限" name="menuIds">
           <a-tree
             v-model:expandedKeys="expandedKeys"
             v-model:selectedKeys="selectedKeys"
@@ -97,10 +92,9 @@
             </template>
           </a-tree>
         </a-form-item>
-
       </a-form>
       <template #footer>
-        <a-button key="back" style="margin-right: 16px;" @click="closeDrawer">取消</a-button>
+        <a-button key="back" style="margin-right: 16px" @click="closeDrawer">取消</a-button>
         <a-button key="submit" type="primary" @click="handleSubmit">提交</a-button>
       </template>
     </a-drawer>
@@ -116,7 +110,10 @@ import { columns } from './consts/tableColumns'
 const query = reactive({
   roleName: ''
 })
-const { tableData, handleSeach, handleTableChange, pagination, loading } = useFetchList(getRoleList, query)
+const { tableData, handleSeach, initTable, handleTableChange, pagination, loading } = useFetchList(
+  getRoleList,
+  query
+)
 onMounted(() => {
   handleSeach()
 })
@@ -128,11 +125,11 @@ const formRef = ref()
 interface FormState {
   roleName: string
   remark: string
-  menuIds: any[],
-  roleId: string | number,
-  roleKey: string,
-  dataScope: number | string,
-  roleSort: number | string,
+  menuIds: any[]
+  roleId: string | number
+  roleKey: string
+  dataScope: number | string
+  roleSort: number | string
 }
 
 let formState = reactive<FormState>({
@@ -142,7 +139,7 @@ let formState = reactive<FormState>({
   roleId: '',
   roleKey: 'ROLE_MEMBER',
   dataScope: '',
-  roleSort: '',
+  roleSort: ''
 })
 
 const handleAdd = () => {
@@ -159,7 +156,7 @@ const handleEdit = (record: any) => {
     roleKey: record.roleKey,
     dataScope: record.dataScope,
     roleSort: record.roleSort,
-    menuIds: record.menuIds?.map((item: any) => item.id),
+    menuIds: record.menuIds?.map((item: any) => item.id)
   }
 }
 const handleDelete = async (roleId: string | number) => {
@@ -182,14 +179,14 @@ const handleSubmit = () => {
       if (res.code === 200) {
         message.success('操作成功！')
         closeDrawer()
-        handleSeach()
+        formState.roleId ? handleSeach() : initTable()
         return
       }
       message.error('操作失败！')
     })
-    .catch((error: any)=> {
-      console.log('error', error);
-    });
+    .catch((error: any) => {
+      console.log('error', error)
+    })
 }
 const closeDrawer = () => {
   formRef.value.resetFields()
@@ -210,40 +207,33 @@ const treeData: TreeProps['treeData'] = [
         key: '0-0-0',
         children: [
           { title: '会话内容', key: '0-0-0-0' },
-          { title: '存档记录', key: '0-0-0-1' },
-        ],
+          { title: '存档记录', key: '0-0-0-1' }
+        ]
       },
       {
         title: '系统设置',
         key: '0-0-1',
         children: [
-          { key: '0-0-1-0',
-            title: '用户管理'
-          },
-          { key: '0-0-1-1',
-            title: '角色管理'
-          },
-          { key: '0-0-1-2',
-            title: '企微信息设置'
-          }
-        ],
-      },
-    ],
-  },
-];
-const expandedKeys = ref<string[]>(['0-0-0', '0-0-1']);
-const selectedKeys = ref<string[]>(['0-0-0']);
-const checkedKeys = ref<string[]>([]);
+          { key: '0-0-1-0', title: '用户管理' },
+          { key: '0-0-1-1', title: '角色管理' },
+          { key: '0-0-1-2', title: '企微信息设置' }
+        ]
+      }
+    ]
+  }
+]
+const expandedKeys = ref<string[]>(['0-0-0', '0-0-1'])
+const selectedKeys = ref<string[]>(['0-0-0'])
+const checkedKeys = ref<string[]>([])
 watch(expandedKeys, () => {
-  console.log('expandedKeys', expandedKeys);
-});
+  console.log('expandedKeys', expandedKeys)
+})
 watch(selectedKeys, () => {
-  console.log('selectedKeys', selectedKeys);
-});
+  console.log('selectedKeys', selectedKeys)
+})
 watch(checkedKeys, () => {
-  console.log('checkedKeys', checkedKeys);
-});
-
+  console.log('checkedKeys', checkedKeys)
+})
 </script>
 <style scoped lang="less">
 .query {
